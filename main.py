@@ -25,9 +25,10 @@ def main():
     df = utils.load_csv(CSV_FILE)
     
     lst = []
-    for text in df["text"].head(NUMBER_OF_POSTS):
+    for i, text in enumerate(df["text"].head(NUMBER_OF_POSTS)):
 
 
+        logging.info(f"------------------- {i} / {NUMBER_OF_POSTS} -------------------------")
         logging.info(f"going the parse the following text:\n {text}")
 
         task = TaskBase(post=text)

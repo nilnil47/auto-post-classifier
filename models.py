@@ -18,20 +18,15 @@ For each dimension, use the following ranking:
 1 - means that the dimension is contained in the post with very high likelyhood
 
 The result should be provided as a JSON having the following format:
-```
 {{
-    'weapons': {{
-        'explanation': Explanation whether the post contains content related to weapons,
-        'ranking': -1, 0 or 1 ranking of the weapons dimension
-    }},
-    'violence': {{
-        "explanation": Explanation whether the post contains content related to violence,
-        'ranking': -1, 0 or 1 ranking of the violence dimension
-    }},
-    'political content': {{
-        'explanation': Explanation whether the post contains content related to politics,
-        'ranking': -1, 0 or 1 ranking of the political content dimension
-    }}
+    "weapons_exp": Explanation whether the post contains content related to weapons,
+    "weapons_rnk": -1, 0 or 1 ranking of the weapons dimension,
+
+    "violence_exp": Explanation whether the post contains content related to violence,
+    "violence_rnk": -1, 0 or 1 ranking of the violence dimension,
+
+    "political_exp": Explanation whether the post contains content related to politics,
+    "political_rnk": -1, 0 or 1 ranking of the political content dimension
 }}
 
 ```

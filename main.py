@@ -15,7 +15,8 @@ import json
 # todo: change the Path object
 console = Console()
 
-CSV_FILE = 'example_posts.csv'
+CSV_FILE = "AntiIsraeli.csv"
+NUMBER_OF_POSTS = 100
     
 
 def main():
@@ -24,9 +25,10 @@ def main():
     df = utils.load_csv(CSV_FILE)
     
     lst = []
-    for text in df["text"].head(3):
+    for i, text in enumerate(df["text"].head(NUMBER_OF_POSTS)):
 
 
+        logging.info(f"------------------- {i} / {NUMBER_OF_POSTS} -------------------------")
         logging.info(f"going the parse the following text:\n {text}")
 
         task = TaskBase(post=text)

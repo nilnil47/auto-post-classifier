@@ -15,7 +15,7 @@ import json
 # todo: change the Path object
 console = Console()
 
-CSV_FILE = "example_posts.csv"
+CSV_FILE = "AntiIsraeli.csv"
 NUMBER_OF_POSTS = 100
     
 

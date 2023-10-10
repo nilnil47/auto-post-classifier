@@ -17,7 +17,7 @@ CSV_FILE = 'example_posts.csv'
     
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     utils.set_openai_api_key()
     df = utils.load_csv(CSV_FILE)
     

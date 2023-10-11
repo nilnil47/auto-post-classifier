@@ -9,7 +9,6 @@ import pandas as pd
 
 QUOTE_REPLACE = '@QUOTE@'
 
-# todo remove
 def set_private_openai_key():
     openai.api_key = input("Please enter your OpenAi API key: ")
 

@@ -16,7 +16,7 @@ console = Console()
 logger.add("file_{time}.log")
 
 CSV_FILE = "AntiIsraeli.csv"
-NUMBER_OF_POSTS = 2
+NUMBER_OF_POSTS = 100
 NUMBER_OF_ITERATION_AFTER_ERROR = 2
 
 RESULT_TEXT_FILE = 'result.txt'
@@ -24,31 +24,25 @@ RESULT_CSV_FILE = 'result.csv'
 
 def main():
     utils.set_openai_api_key()
-    os.remove(RESULT_TEXT_FILE)
+    if os.path.exists(RESULT_TEXT_FILE):
+        os.remove(RESULT_TEXT_FILE)
     
     df = utils.load_csv(CSV_FILE)
-    # df = df.sample(NUMBER_OF_POSTS)
+    df = df.sample(NUMBER_OF_POSTS)
     df["text"]=df["text"].fillna("")
 
     lst = []
     for i, text in enumerate(df["text"].head(NUMBER_OF_POSTS)):
-        logger.info(
-            f"------------------- {i} / {NUMBER_OF_POSTS} -------------------------")
-        logger.info(f"going the parse the following text:\n {text}")
-
-        task = TaskBase(post=text)
-        task.build_prompt()
-
-        # console.print("About to send the following prompt🚀", style="#5f5fff")
-        # print(task.prompt)
-        # console.print("End of prompt", style="#5f5fff")
-
-        #check for invalid completions, if invalid try again
         if text != "":
 
-            for j in range(NUMBER_OF_ITERATION_AFTER_ERROR + 1):
+            logger.info(
+            f"------------------- {i} / {NUMBER_OF_POSTS} -------------------------")
+            logger.info(f"going the parse the following text:\n {text}")
 
-                # todo if loop repeats many times report and break
+            task = TaskBase(post=text)
+            task.build_prompt()
+
+            for j in range(NUMBER_OF_ITERATION_AFTER_ERROR + 1):
 
                 completion =utils.get_completion(task.prompt)
 

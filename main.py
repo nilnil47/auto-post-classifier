@@ -1,34 +1,33 @@
-import os
+import json
 import logging
-from dataclasses import dataclass
+from json import JSONDecodeError
 
-import typer
-# from rich import print
-from rich.console import Console
-from typing_extensions import Annotated
 import pandas as pd
+from rich import print
+from rich.console import Console
 
 import utils
 from models import TaskBase
-import json
 
 # todo: change the Path object
 console = Console()
 
 CSV_FILE = "AntiIsraeli.csv"
-NUMBER_OF_POSTS = 100
-    
+NUMBER_OF_POSTS = 30
 
 def main():
     logging.basicConfig(level=logging.INFO)
     utils.set_openai_api_key()
+    
     df = utils.load_csv(CSV_FILE)
     
+    df = utils.load_csv(CSV_FILE)
+    df["text"]=df["text"].fillna("")
+
     lst = []
     for i, text in enumerate(df["text"].head(NUMBER_OF_POSTS)):
-
-
-        logging.info(f"------------------- {i} / {NUMBER_OF_POSTS} -------------------------")
+        logging.info(
+            f"------------------- {i} / {NUMBER_OF_POSTS} -------------------------")
         logging.info(f"going the parse the following text:\n {text}")
 
         task = TaskBase(post=text)
@@ -38,13 +37,26 @@ def main():
         print(task.prompt)
         console.print("End of prompt", style="#5f5fff")
 
-        response = json.loads(utils.get_completion(task.prompt))
-        response["text"] = text
+        #check for invalid completions, if invalid try again
+        while True:
+            # todo if loop repeats many times report and break
 
-        lst.append(response)
+            completion =utils.get_completion(task.prompt)
+
+            try:
+                response = json.loads(completion)
+            except JSONDecodeError:
+                logging.error("bad JSON format: %s", completion)
+                continue
+            if utils.check_JSON_format(response):
+                response["text"] = text
+                lst.append(response)
+                break
+
 
     res = pd.DataFrame(lst)
     res.to_csv("result.csv")
+
 
 if __name__ == "__main__":
     main()

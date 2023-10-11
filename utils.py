@@ -1,8 +1,17 @@
+import logging
 import os
+import re
 
 import dotenv
+import jsonschema as jsonschema
 import openai
 import pandas as pd
+
+QUOTE_REPLACE = '@QUOTE@'
+
+# todo remove
+def set_private_openai_key():
+    openai.api_key = input("Please enter your OpenAi API key: ")
 
 
 def set_openai_api_key() -> bool:
@@ -43,16 +52,55 @@ def set_openai_api_key() -> bool:
 
 
 def get_completion(prompt, model="gpt-3.5-turbo-16k"):
-    openai.api_key = os.getenv("OPENAI_API_KEY")
+    # openai.api_key = os.getenv("OPENAI_API_KEY")
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=0,  # this is the degree of randomness of the model's output
+        temperature=1,  # this is the degree of randomness of the model's output
 
     )
     return response.choices[0].message["content"]
 
+
+def transcribe(audio_path):
+    # File uploads are currently limited to 25 MB and the following input file
+    # types are supported: mp3, mp4, mpeg, mpga, m4a, wav, and webm.
+
+    audio_file = open(audio_path, "rb")
+    # we might want to use translate (which outputs an english translation).
+    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    return transcript
+
+
 def load_csv(path: str):
-    df = pd.read_csv('example_posts.csv')
+    df = pd.read_csv(path)
     return df
+
+
+def check_JSON_format(json_data):
+    # Define the JSON schema
+    schema = {
+        "type": "object",
+        "properties": {
+            ".*_exp": {"type": "string"},
+            ".*_rnk": {"type": "number"}
+        },
+        "required": ["summary"]
+    }
+
+    # Validate the JSON data against the schema
+    try:
+        jsonschema.validate(instance=json_data, schema=schema)
+        return True
+    except jsonschema.exceptions.ValidationError as e:
+        logging.error(f"JSON is not valid: {e.message}")
+        return False
+
+    # json = json.replace('"', QUOTE_REPLACE)
+    #
+    # pattern = r"\{((?:\s*\"(?:(?!\").)+_exp\":\s*\"(?:(?!\").)+\"\s*,\s*\"(?:(?!\").)+_rnk\":\s*-?\d\s*,\s*)*)\"summary\":\s*\"(?:(?!\").)+\"\s*\}"
+    # pattern  = pattern.replace("\"", QUOTE_REPLACE)
+    # match = re.search(pattern, json)
+    # return bool(match)
+    #

@@ -37,12 +37,18 @@ def set_openai_api_key() -> bool:
         os.environ["OPENAI_API_KEY"] = dotenv.dotenv_values(dotenv.find_dotenv())[
             "OPENAI_API_KEY"
         ]
+        openai.api_key=dotenv.dotenv_values(dotenv.find_dotenv())[
+            "OPENAI_API_KEY"
+        ]
         if os.getenv("OPENAI_API_KEY") != "":
             return True
 
     config_file = os.path.expanduser("~/.config/heregpt")
     if os.path.isfile(config_file):
         os.environ["OPENAI_API_KEY"] = dotenv.dotenv_values(config_file)[
+            "OPENAI_API_KEY"
+        ]
+        openai.api_key = dotenv.dotenv_values(config_file)[
             "OPENAI_API_KEY"
         ]
         if os.getenv("OPENAI_API_KEY") != "":
@@ -52,7 +58,6 @@ def set_openai_api_key() -> bool:
 
 
 def get_completion(prompt, model="gpt-3.5-turbo-16k"):
-    # openai.api_key = os.getenv("OPENAI_API_KEY")
     messages = [{"role": "user", "content": prompt}]
     response = openai.ChatCompletion.create(
         model=model,

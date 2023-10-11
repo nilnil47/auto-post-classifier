@@ -15,12 +15,12 @@ console = Console()
 CSV_FILE = "AntiIsraeli.csv"
 NUMBER_OF_POSTS = 30
 
-
 def main():
     logging.basicConfig(level=logging.INFO)
     utils.set_openai_api_key()
-    # utils.set_private_openai_key()
-
+    
+    df = utils.load_csv(CSV_FILE)
+    
     df = utils.load_csv(CSV_FILE)
     df["text"]=df["text"].fillna("")
 

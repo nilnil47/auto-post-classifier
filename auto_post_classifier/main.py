@@ -61,7 +61,7 @@ def main(
             "-n",
             help=(
                 "Set the number of posts to be processed from the list. Use -1 if you"
-                " want to process all posts in data"
+                " want to process all posts in the data"
             ),
         ),
     ] = 100,

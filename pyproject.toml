@@ -2,7 +2,11 @@
 name = "auto-post-classifier"
 version = "0.1.0"
 description = ""
-authors = ["Dror Atariah <drorata@gmail.com>"]
+authors = [
+    "Dror Atariah <drorata@gmail.com>",
+    "Eitan Rabinovich <eitan19199@gmail.com>",
+    "Neil Dotan <nilnil47@gmail.com>",
+]
 readme = "README.md"
 packages = [{ include = "auto_post_classifier" }]
 

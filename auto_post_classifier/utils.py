@@ -1,13 +1,13 @@
 import logging
 import os
-import re
 
 import dotenv
 import jsonschema as jsonschema
 import openai
 import pandas as pd
 
-QUOTE_REPLACE = '@QUOTE@'
+QUOTE_REPLACE = "@QUOTE@"
+
 
 def set_private_openai_key():
     openai.api_key = input("Please enter your OpenAi API key: ")
@@ -36,9 +36,7 @@ def set_openai_api_key() -> bool:
         os.environ["OPENAI_API_KEY"] = dotenv.dotenv_values(dotenv.find_dotenv())[
             "OPENAI_API_KEY"
         ]
-        openai.api_key=dotenv.dotenv_values(dotenv.find_dotenv())[
-            "OPENAI_API_KEY"
-        ]
+        openai.api_key = dotenv.dotenv_values(dotenv.find_dotenv())["OPENAI_API_KEY"]
         if os.getenv("OPENAI_API_KEY") != "":
             return True
 
@@ -47,9 +45,7 @@ def set_openai_api_key() -> bool:
         os.environ["OPENAI_API_KEY"] = dotenv.dotenv_values(config_file)[
             "OPENAI_API_KEY"
         ]
-        openai.api_key = dotenv.dotenv_values(config_file)[
-            "OPENAI_API_KEY"
-        ]
+        openai.api_key = dotenv.dotenv_values(config_file)["OPENAI_API_KEY"]
         if os.getenv("OPENAI_API_KEY") != "":
             return True
 
@@ -62,7 +58,6 @@ def get_completion(prompt, model="gpt-3.5-turbo-16k"):
         model=model,
         messages=messages,
         temperature=1,  # this is the degree of randomness of the model's output
-
     )
     return response.choices[0].message["content"]
 
@@ -86,11 +81,8 @@ def check_JSON_format(json_data):
     # Define the JSON schema
     schema = {
         "type": "object",
-        "properties": {
-            ".*_exp": {"type": "string"},
-            ".*_rnk": {"type": "number"}
-        },
-        "required": ["summary"]
+        "properties": {".*_exp": {"type": "string"}, ".*_rnk": {"type": "number"}},
+        "required": ["summary"],
     }
 
     # Validate the JSON data against the schema
@@ -100,11 +92,3 @@ def check_JSON_format(json_data):
     except jsonschema.exceptions.ValidationError as e:
         logging.error(f"JSON is not valid: {e.message}")
         return False
-
-    # json = json.replace('"', QUOTE_REPLACE)
-    #
-    # pattern = r"\{((?:\s*\"(?:(?!\").)+_exp\":\s*\"(?:(?!\").)+\"\s*,\s*\"(?:(?!\").)+_rnk\":\s*-?\d\s*,\s*)*)\"summary\":\s*\"(?:(?!\").)+\"\s*\}"
-    # pattern  = pattern.replace("\"", QUOTE_REPLACE)
-    # match = re.search(pattern, json)
-    # return bool(match)
-    #

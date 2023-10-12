@@ -12,7 +12,12 @@ It is possible to run the script in one of two ways:
 
 ### Directly
 
-`poetry run auto-post-classifier` or
+```
+poetry run python auto_post_classifier/main.py
+```
+
+Use this method during dev.
+
 
 ### Indirectly
 

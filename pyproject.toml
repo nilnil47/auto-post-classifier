@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "auto-post-classifier"
+version = "0.1.0"
+description = ""
+authors = [
+    "Dror Atariah <drorata@gmail.com>",
+    "Eitan Rabinovich <eitan19199@gmail.com>",
+    "Neil Dotan <nilnil47@gmail.com>",
+]
+readme = "README.md"
+packages = [{ include = "auto_post_classifier" }]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+pandas = "^2.1.1"
+typer = "^0.9.0"
+loguru = "^0.7.2"
+rich = "^13.6.0"
+pydantic = "^2.4.2"
+openai = "^0.28.1"
+pydantic-settings = "^2.0.3"
+jsonschema = "^4.19.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.25.2"
+
+[tool.poetry.scripts]
+auto-post-classifier = "auto_post_classifier.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

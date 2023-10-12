@@ -10,9 +10,13 @@ class TaskBase(BaseModel):
     def build_prompt(self):
         self.prompt = f""" Provided with a post enclosed by three backticks you need to return a
 ranking of the post in the following dimensions:
+- antisemitism
+- graphic violence 
 - weapons
-- violence
+- call for violence operation
 - political content
+- supporting in terror
+- misinformation
 
 For each dimension, use the following ranking:
 -1 - means that the dimension is not contained in the post
@@ -23,18 +27,13 @@ The 'explanation' should give a reasoning for choosing the ranking.
 
 The result should be provided as a JSON having the following format:
 {{
-    "weapons_exp": Explanation whether the post contains content related to weapons,
-    "weapons_rnk": -1, 0 or 1 ranking of the weapons dimension,
-
-    "violence_exp": Explanation whether the post contains content related to violence,
-    "violence_rnk": -1, 0 or 1 ranking of the violence dimension,
-
-    "political_exp": Explanation whether the post contains content related to politics,
-    "political_rnk": -1, 0 or 1 ranking of the political content dimension
+    "*_exp": Explanation whether the post contains content related to weapons,
+    "*_rnk": -1, 0 or 1 ranking of the weapons dimension,
 
     "summary": summary of the post in max 3 lines
 }}
 
+where * is replace with each dimensions
 ```
 {self.post}
 ```

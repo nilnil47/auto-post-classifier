@@ -18,7 +18,10 @@ poetry run python auto_post_classifier/main.py
 
 Use this method during dev.
 
-
 ### Indirectly
 
 First start the environment with `poetry shell` executed from the project's root directory and then simply execute `auto-post-classifier`
+
+## install poetry
+
+https://python-poetry.org/docs/

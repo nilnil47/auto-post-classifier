@@ -27,10 +27,29 @@ The 'explanation' should give a reasoning for choosing the ranking.
 
 The result should be provided as a JSON having the following format:
 {{
-    "*_exp": Explanation whether the post contains content related to weapons,
-    "*_rnk": -1, 0 or 1 ranking of the weapons dimension,
 
-    "summary": summary of the post in max 3 lines
+    "antisemitism_exp": "Explanation whether the post contains content related to antisemitism",
+    "antisemitism_rnk": "-1, 0, or 1 ranking of the antisemitism dimension",
+
+    "graphic_violence_exp": "Explanation whether the post contains content related to graphic violence",
+    "graphic_violence_rnk": "-1, 0, or 1 ranking of the graphic violence dimension",
+
+    "weapons_exp": "Explanation whether the post contains content related to weapons",
+    "weapons_rnk": "-1, 0, or 1 ranking of the weapons dimension",
+
+    "call_for_violence_operation_exp": "Explanation whether the post contains content related to a call for violence operation",
+    "call_for_violence_operation_rnk": "-1, 0, or 1 ranking of the call for violence operation dimension",
+
+    "political_content_exp": "Explanation whether the post contains political content",
+    "political_content_rnk": "-1, 0, or 1 ranking of the political content dimension",
+
+    "supporting_in_terror_exp": "Explanation whether the post contains content supporting terrorism",
+    "supporting_in_terror_rnk": "-1, 0, or 1 ranking of the supporting in terror dimension",
+
+    "misinformation_exp": "Explanation whether the post contains misinformation",
+    "misinformation_rnk": "-1, 0, or 1 ranking of the misinformation dimension",
+
+    "summary": "Summary of the post in max 3 lines"
 }}
 
 where * is replace with each dimensions
@@ -38,3 +57,5 @@ where * is replace with each dimensions
 {self.post}
 ```
 """
+        
+        

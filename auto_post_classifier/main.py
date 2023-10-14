@@ -117,6 +117,7 @@ def main(
                 except JSONDecodeError:
                     logger.error("bad JSON format: %s", completion)
                     continue
+
                 if utils.check_JSON_format(response):
                     response["text"] = text
 
@@ -127,6 +128,7 @@ def main(
                     ) as out_file:
                         out_file.write(f"{json.dumps(response, ensure_ascii=False)}\n")
                     lst.append(response)
+                    break
 
     res = pd.DataFrame(lst)
     res.to_csv(output_dir / f"{output_base_filename}.csv")

@@ -45,3 +45,20 @@ def check_JSON_format(json_data):
     except jsonschema.exceptions.ValidationError as e:
         logging.error(f"JSON is not valid: {e.message}")
         return False
+
+def generate_score(post: pd.Series):
+    weights = {
+    "antisemitism": 0.15,
+    "graphic_violence": 0.15,
+    "weapons": 0.10,
+    "call_for_violence_operation": 0.10,
+    "political_content": 0.15,
+    "supporting_in_terror": 0.15,
+    "misinformation": 0.20
+}
+    score = 0
+    for dimension in weights:
+        score += post[dimension + "_rnk"] * weights[dimension]
+    
+    post['score'] = score
+    return post

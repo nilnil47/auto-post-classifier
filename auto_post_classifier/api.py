@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from auto_post_classifier.models import TaskBase
-import auto_post_classifier.utils
+import auto_post_classifier.utils as utils
 import json
 from json import JSONDecodeError
 from loguru import logger
@@ -17,6 +17,7 @@ app = FastAPI()
 
 @app.post("/rank")
 def read_root(post: Post):
+    logger.info(f"going the parse the following text:\n {post.text}")
     task = TaskBase(post=post.text)
     task.build_prompt()
 
@@ -36,4 +37,3 @@ def read_root(post: Post):
             return response
 
     
-

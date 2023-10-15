@@ -89,60 +89,61 @@ def main(
     if api:
         from api import app
         uvicorn.run(app, host="0.0.0.0", port=8000)
+        
+    else:
+        for ext in [".csv", ".txt"]:
+            path_to_clear = output_dir / f"{output_base_filename}{ext}"
+            logger.info(f"Checking if {path_to_clear} exists")
+            if os.path.exists(path_to_clear) and not output_overwrite:
+                logger.warning("Output paths exist but overwrite flag is false")
+                raise typer.Exit(code=1)
+            if os.path.exists(path_to_clear) and output_overwrite:
+                logger.info(f"Removing the path {path_to_clear}")
+                os.remove(path_to_clear)
 
-    for ext in [".csv", ".txt"]:
-        path_to_clear = output_dir / f"{output_base_filename}{ext}"
-        logger.info(f"Checking if {path_to_clear} exists")
-        if os.path.exists(path_to_clear) and not output_overwrite:
-            logger.warning("Output paths exist but overwrite flag is false")
-            raise typer.Exit(code=1)
-        if os.path.exists(path_to_clear) and output_overwrite:
-            logger.info(f"Removing the path {path_to_clear}")
-            os.remove(path_to_clear)
+        df = utils.load_csv(data_path)
 
-    df = utils.load_csv(data_path)
+        if shuffle:
+            df = df.sample(frac=1)
+        if post_num != -1:
+            df = df.head(post_num)
+        df["text"] = df["text"].fillna("")
 
-    if shuffle:
-        df = df.sample(frac=1)
-    if post_num != -1:
-        df = df.head(post_num)
-    df["text"] = df["text"].fillna("")
+        lst = []
+        for i, text in enumerate(df["text"].head(post_num)):
+            if text != "":
+                logger.info(
+                    f"------------------- {i} / {post_num} -------------------------"
+                )
+                logger.info(f"going the parse the following text:\n {text}")
 
-    lst = []
-    for i, text in enumerate(df["text"].head(post_num)):
-        if text != "":
-            logger.info(
-                f"------------------- {i} / {post_num} -------------------------"
-            )
-            logger.info(f"going the parse the following text:\n {text}")
+                task = TaskBase(post=text)
+                task.build_prompt()
 
-            task = TaskBase(post=text)
-            task.build_prompt()
+                for j in range(iter_num + 1):
+                    completion = utils.get_completion(task.prompt)
 
-            for j in range(iter_num + 1):
-                completion = utils.get_completion(task.prompt)
+                    try:
+                        response = json.loads(completion)
+                    except JSONDecodeError:
+                        logger.error("bad JSON format: %s", completion)
+                        continue
 
-                try:
-                    response = json.loads(completion)
-                except JSONDecodeError:
-                    logger.error("bad JSON format: %s", completion)
-                    continue
+                    if utils.check_JSON_format(response):
+                        response["text"] = text
+                        response["score"] = utils.generate_score(response)
 
-                if utils.check_JSON_format(response):
-                    response["text"] = text
-                    response["score"] = utils.generate_score(response)
+                        with open(
+                            output_dir / f"{output_base_filename}.txt",
+                            "a",
+                            encoding="utf-8",
+                        ) as out_file:
+                            out_file.write(f"{json.dumps(response, ensure_ascii=False)}\n")
+                        lst.append(response)
+                        break
 
-                    with open(
-                        output_dir / f"{output_base_filename}.txt",
-                        "a",
-                        encoding="utf-8",
-                    ) as out_file:
-                        out_file.write(f"{json.dumps(response, ensure_ascii=False)}\n")
-                    lst.append(response)
-                    break
-
-    res = pd.DataFrame(lst)
-    res.to_csv(output_dir / f"{output_base_filename}.csv")
+        res = pd.DataFrame(lst)
+        res.to_csv(output_dir / f"{output_base_filename}.csv")
 
 
 if __name__ == "__main__":

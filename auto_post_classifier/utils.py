@@ -4,6 +4,8 @@ import jsonschema as jsonschema
 import openai
 import pandas as pd
 
+from loguru import logger
+
 
 def get_completion(prompt, model="gpt-3.5-turbo-16k"):
     messages = [{"role": "user", "content": prompt}]
@@ -46,7 +48,7 @@ def check_JSON_format(json_data):
         logging.error(f"JSON is not valid: {e.message}")
         return False
 
-def generate_score(post: pd.Series):
+def generate_score_for_df(post: pd.Series):
     weights = {
     "antisemitism": 0.15,
     "graphic_violence": 0.15,
@@ -62,3 +64,19 @@ def generate_score(post: pd.Series):
     
     post['score'] = score
     return post
+
+def generate_score(post: dict):
+    weights = {
+    "antisemitism": 0.15,
+    "graphic_violence": 0.15,
+    "weapons": 0.10,
+    "call_for_violence_operation": 0.10,
+    "political_content": 0.15,
+    "supporting_in_terror": 0.15,
+    "misinformation": 0.20
+}
+    score = 0
+    for dimension in weights:
+        score += float(post[dimension + "_rnk"]) * weights[dimension]
+    
+    return score

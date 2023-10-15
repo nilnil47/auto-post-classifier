@@ -10,7 +10,10 @@ from rich.console import Console
 from pathlib import Path
 from auto_post_classifier import utils
 from auto_post_classifier.models import TaskBase
+
 import openai
+import uvicorn
+
 
 # todo: change the Path object
 console = Console()
@@ -74,11 +77,18 @@ def main(
     output_overwrite: Annotated[
         bool, typer.Option(help="Whether to overwrite results or not")
     ] = False,
+    api: Annotated[
+        bool, typer.Option(help="Wheter to use api mode")
+    ] = False,
     openai_api_key: Annotated[
         str, typer.Option(help="API key for OpenAI", envvar="OPENAI_API_KEY")
     ] = ...,
 ):
     openai.api_key = openai_api_key
+
+    if api:
+        from api import app
+        uvicorn.run(app, host="0.0.0.0", port=8000)
 
     for ext in [".csv", ".txt"]:
         path_to_clear = output_dir / f"{output_base_filename}{ext}"
@@ -120,6 +130,7 @@ def main(
 
                 if utils.check_JSON_format(response):
                     response["text"] = text
+                    response["score"] = utils.generate_score(response)
 
                     with open(
                         output_dir / f"{output_base_filename}.txt",

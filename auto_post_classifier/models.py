@@ -10,60 +10,65 @@ class TaskBase(BaseModel):
 
 
     def build_prompt(self):
-        self.user_prompt = f""" 
-        here is some context:
-        ###
-        In recent news, a brazen attack by the Palestinian militant group Hamas on Israel has sparked a major escalation in the Israeli-Palestinian conflict. This unprecedented attack involved around 1,000 assailants infiltrating Israeli territory, resulting in hundreds of casualties, including both soldiers and civilians, as well as the abduction of dozens of hostages. The attack has been characterized by its extreme brutality, with shocking reports of massacres, beheadings, sexual violence, and the use of civilians as human shields. These acts have been widely condemned as war crimes and crimes against humanity under international humanitarian law.
-        ###
-        
-The result should be provided as a JSON having the following format:
+        self.user_prompt = f"""Here is some context:
+
+@@In recent news, a bold and unprecedented attack was carried out by the Palestinian militant group Hamas against Israel. 
+This egregious assault involved approximately 3,000 assailants infiltrating Israeli territory, 
+resulting in numerous casualties, including both soldiers and civilians. Dozens of hostages were also abducted. 
+The attack has been marked by extreme brutality, with disturbing reports of massacres, beheadings, sexual violence, 
+and the use of civilians as human shields. These actions have been widely condemned as war crimes and crimes against 
+humanity under international humanitarian law.@@
+
+The result should be provided as a JSON with the following format:
+
 {{
+    "antisemitism_exp": "Explanation regarding the presence of antisemitic content",
+    "antisemitism_rnk": "-1, 0, or 1 ranking for antisemitism",
 
-    "antisemitism_exp": "Explanation whether the post contains content related to antisemitism",
-    "antisemitism_rnk": "-1, 0, or 1 ranking of the antisemitism dimension",
+    "antiIsrael_extremist_exp": "Explanation regarding the presence of anti-Israel extremist content",
+    "antiIsrael_extremist_rnk": "-1, 0, or 1 ranking for anti-Israel extremism",
 
-    "graphic_violence_exp": "Explanation whether the post contains content related to graphic violence",
-    "graphic_violence_rnk": "-1, 0, or 1 ranking of the graphic violence dimension",
+    "graphic_violence_exp": "Explanation regarding the presence of graphic violence content",
+    "graphic_violence_rnk": "-1, 0, or 1 ranking for graphic violence",
 
-    "weapons_exp": "Explanation whether the post contains content related to weapons",
-    "weapons_rnk": "-1, 0, or 1 ranking of the weapons dimension",
+    "weapons_exp": "Explanation regarding the presence of content related to weapons",
+    "weapons_rnk": "-1, 0, or 1 ranking for weapons content",
 
-    "call_for_violence_operation_exp": "Explanation whether the post contains content related to a call for violence operation",
-    "call_for_violence_operation_rnk": "-1, 0, or 1 ranking of the call for violence operation dimension",
+    "calls_for_violence_exp": "Explanation regarding the presence of content related to a call for violence operation",
+    "calls_for_violence_rnk": "-1, 0, or 1 ranking for a call for violence operation",
 
-    "political_content_exp": "Explanation whether the post contains political content",
-    "political_content_rnk": "-1, 0, or 1 ranking of the political content dimension",
+    "endorsement_of_terrorism_exp": "Explanation regarding the presence of content supporting terrorism",
+    "endorsement_of_terrorism_rnk": "-1, 0, or 1 ranking for support of terrorism",
 
-    "supporting_in_terror_exp": "Explanation whether the post contains content supporting terrorism",
-    "supporting_in_terror_rnk": "-1, 0, or 1 ranking of the supporting in terror dimension",
+    "misinformation_exp": "Explanation regarding the presence of misinformation",
+    "misinformation_rnk": "-1, 0, or 1 ranking for misinformation",
 
-    "misinformation_exp": "Explanation whether the post contains misinformation",
-    "misinformation_rnk": "-1, 0, or 1 ranking of the misinformation dimension",
-
-    "summary": "Summary of the post in max 3 lines"
+    "summary": "Summary of the post in a maximum of 3 lines"
 }}
 
-where * is replace with each dimensions
+{self.post}
+
+}}
+
 ```
 {self.post}
 ```
 """
 
         self.sys_prompt = """You are helping to keep the internet safe. 
-Provided with a post enclosed by three backticks you need to return a
-ranking of the post in the following dimensions:
+You're tasked with evaluating a post enclosed by three backticks to rank it in the following dimensions:
 - antisemitism
+- anti-Israel extremism
 - graphic violence 
 - weapons
-- call for violence operation
-- political content
-- supporting in terror
+- calls for violence
+- endorsement of terrorism
 - misinformation
 
-For each dimension, use the following ranking:
--1 - means that the dimension is not contained in the post
-0 - means that it is not clear whether the dimension is contained in the post
-1 - means that the dimension is contained in the post with very high likelihood
+Use the ranking system:
+-1: The dimension is not present in the post.
+0: It's unclear if the dimension is in the post.
+1: The dimension is highly likely to be in the post.
 
-The 'explanation' should give a reasoning for choosing the ranking.
+Provide an explanation for each ranking.
 """

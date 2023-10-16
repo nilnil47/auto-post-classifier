@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 import jsonschema as jsonschema
 import openai
@@ -15,9 +16,28 @@ def get_completion(user_prompt, sys_prompt, model="gpt-3.5-turbo-16k"):
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=1,  # this is the degree of randomness of the model's output
+        temperature=0.5,  # this is the degree of randomness of the model's output
     )
     return response.choices[0].message["content"]
+
+
+def get_completion_chat(user_prompts: List[str], sys_prompt, model="gpt-3.5-turbo-16k"):
+    # can be used if we decide to ask the model for each dimension separately.
+
+    messages = [{"role": "system", "content": sys_prompt}]
+    responses=[]
+    for user_prompt in user_prompts:
+        messages.append(user_prompt)
+        response = openai.ChatCompletion.create(
+            model=model,
+            messages=messages,
+            temperature=1,  # this is the degree of randomness of the model's output
+        )
+        responses.append(response["choices"][0]["message"].content)
+        messages.append(
+            {"role": "assistant", "content": response["choices"][0]["message"].content})
+    return responses
+
 
 
 def transcribe(audio_path):
@@ -39,8 +59,15 @@ def check_JSON_format(json_data):
     # Define the JSON schema
     schema = {
         "type": "object",
-        "properties": {".*_exp": {"type": "string"}, ".*_rnk": {"type": "number"}},
-        "required": ["summary"],
+        "properties": {
+            "summary": {"type": "string"}
+        },
+        "patternProperties": {
+            ".*_exp$": {"type": "string"},
+            ".*_rnk$": {"type": "number"}
+        },
+        "additionalProperties": False,
+        "required": ["summary"]
     }
 
     # Validate the JSON data against the schema
@@ -73,13 +100,14 @@ def generate_score(post: dict):
     "antisemitism": 0.15,
     "graphic_violence": 0.15,
     "weapons": 0.10,
-    "call_for_violence_operation": 0.10,
-    "political_content": 0.15,
-    "supporting_in_terror": 0.15,
+    "endorsement_of_terrorism": 0.10,
+    "antiIsrael_extremist": 0.15,
+    "calls_for_violence": 0.20,
     "misinformation": 0.20
 }
+    rnk_mtpl_map = {-1.0: -0.5, 0.0: 0.2, 1.0: 1}
     score = 0
     for dimension in weights:
-        score += float(post[dimension + "_rnk"]) * weights[dimension]
+        score += rnk_mtpl_map[float(post[dimension + "_rnk"])] * weights[dimension]
     
     return score

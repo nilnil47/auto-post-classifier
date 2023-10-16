@@ -106,13 +106,13 @@ def main(
                 os.remove(path_to_clear)
 
         df = utils.load_csv(data_path)
+        df = df[df['text'].str.len() >= min_post_length]
 
         if shuffle:
             df = df.sample(frac=1)
         if post_num != -1:
             df = df.head(post_num)
         df["text"] = df["text"].fillna("")
-        df = df[df['text'].str.len() >= min_post_length]
 
         lst = []
         for i, text in enumerate(df["text"].head(post_num)):
@@ -124,7 +124,6 @@ def main(
 
                 task = TaskBase(post=text)
                 task.build_prompt()
-
                 for j in range(iter_num + 1):
                     completion = utils.get_completion(task.user_prompt, task.sys_prompt)
 
@@ -133,6 +132,9 @@ def main(
                     except JSONDecodeError:
                         logger.error(f"bad JSON format: {completion}")
                         continue
+                    for key, value in response.items():
+                        if key.endswith('_rnk') and isinstance(value, str):
+                            response[key] = int(value)
 
                     if utils.check_JSON_format(response):
                         response["text"] = text
@@ -146,7 +148,6 @@ def main(
                             out_file.write(f"{json.dumps(response, ensure_ascii=False)}\n")
                         lst.append(response)
                         break
-
         res = pd.DataFrame(lst)
         res.to_csv(output_dir / f"{output_base_filename}.csv")
 

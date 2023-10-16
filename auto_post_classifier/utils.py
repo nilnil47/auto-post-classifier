@@ -7,8 +7,11 @@ import pandas as pd
 from loguru import logger
 
 
-def get_completion(prompt, model="gpt-3.5-turbo-16k"):
-    messages = [{"role": "user", "content": prompt}]
+def get_completion(user_prompt, sys_prompt, model="gpt-3.5-turbo-16k"):
+    messages = [
+        {"role": "system", "content": sys_prompt},
+        {"role": "user", "content": user_prompt}
+    ]
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,

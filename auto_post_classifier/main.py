@@ -83,13 +83,17 @@ def main(
     openai_api_key: Annotated[
         str, typer.Option(help="API key for OpenAI", envvar="OPENAI_API_KEY")
     ] = ...,
+    min_post_length: int = typer.Option(
+        0,  # Default min_length value
+        help="Minimum length for filtering rows",
+    ),
 ):
     openai.api_key = openai_api_key
 
     if api:
         from api import app
         uvicorn.run(app, host="0.0.0.0", port=8000)
-        
+
     else:
         for ext in [".csv", ".txt"]:
             path_to_clear = output_dir / f"{output_base_filename}{ext}"
@@ -108,6 +112,7 @@ def main(
         if post_num != -1:
             df = df.head(post_num)
         df["text"] = df["text"].fillna("")
+        df = df[df['text'].str.len() >= min_post_length]
 
         lst = []
         for i, text in enumerate(df["text"].head(post_num)):
@@ -121,12 +126,12 @@ def main(
                 task.build_prompt()
 
                 for j in range(iter_num + 1):
-                    completion = utils.get_completion(task.prompt)
+                    completion = utils.get_completion(task.user_prompt, task.sys_prompt)
 
                     try:
                         response = json.loads(completion)
                     except JSONDecodeError:
-                        logger.error("bad JSON format: %s", completion)
+                        logger.error(f"bad JSON format: {completion}")
                         continue
 
                     if utils.check_JSON_format(response):

@@ -23,7 +23,8 @@ def read_root(post: Post):
 
     # fixme: replace to iternum 
     for j in range(iter_num + 1):
-        completion = utils.get_completion(task.prompt)
+        completion = utils.get_completion(user_prompt=task.user_prompt,
+                                          sys_prompt=task.sys_prompt)
 
         try:
             response = json.loads(completion)

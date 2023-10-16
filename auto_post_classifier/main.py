@@ -10,14 +10,16 @@ from rich.console import Console
 from pathlib import Path
 from auto_post_classifier import utils
 from auto_post_classifier.models import TaskBase
+from dotenv import load_dotenv
 
 import openai
 import uvicorn
 
 
 # todo: change the Path object
+load_dotenv()
 console = Console()
-logger.add("file_{time}.log")
+logger.add(os.path.join("logs", "file_{time}.log"))
 
 
 def main(

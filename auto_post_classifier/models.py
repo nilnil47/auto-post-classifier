@@ -11,7 +11,6 @@ class TaskBase(BaseModel):
 
     def build_prompt(self):
         self.user_prompt = f"""Here is some context:
-
 @@In recent news, a bold and unprecedented attack was carried out by the Palestinian militant group Hamas against Israel. 
 This egregious assault involved approximately 3,000 assailants infiltrating Israeli territory, 
 resulting in numerous casualties, including both soldiers and civilians. Dozens of hostages were also abducted. 
@@ -71,7 +70,6 @@ Provide an explanation for each ranking.
 
     def build_prompt_no_exp(self):
         self.user_prompt = f"""Here is some context:
-
         @@In recent news, a bold and unprecedented attack was carried out by the Palestinian militant group Hamas against Israel. 
         This egregious assault involved approximately 3,000 assailants infiltrating Israeli territory, 
         resulting in numerous casualties, including both soldiers and civilians. Dozens of hostages were also abducted. 

@@ -54,7 +54,15 @@ def load_csv(path: str):
     df = pd.read_csv(path)
     return df
 
-
+def JSON_rank_to_number(response):
+    """takes the JSON output and casts the rank to numbers."""
+    for key, value in response.items():
+        if key.endswith('_rnk') and isinstance(value, str):
+            try:
+                response[key] = int(value)
+            except ValueError:
+                return False
+    return True
 def check_JSON_format(json_data):
     # Define the JSON schema
     schema = {
@@ -77,6 +85,7 @@ def check_JSON_format(json_data):
     except jsonschema.exceptions.ValidationError as e:
         logging.error(f"JSON is not valid: {e.message}")
         return False
+
 
 def generate_score_for_df(post: pd.Series):
     weights = {
@@ -105,7 +114,7 @@ def generate_score(post: dict):
     "calls_for_violence": 0.20,
     "misinformation": 0.20
 }
-    rnk_mtpl_map = {-1.0: -0.5, 0.0: 0.2, 1.0: 1}
+    rnk_mtpl_map = {-1.0: -0.2, 0.0: 0.2, 1.0: 1}
     score = 0
     for dimension in weights:
         score += rnk_mtpl_map[float(post[dimension + "_rnk"])] * weights[dimension]

@@ -31,11 +31,9 @@ def read_root(post: Post):
         except JSONDecodeError:
             logger.error("bad JSON format: %s", completion)
             continue
-        for key, value in response.items():
-            if key.endswith('_rnk') and isinstance(value, str):
-                response[key] = int(value)
 
-        if utils.check_JSON_format(response):
+
+        if utils.JSON_rank_to_number(response) and utils.check_JSON_format(response):
             response["text"] = post.text
             response["score"] = utils.generate_score(response)
             return response

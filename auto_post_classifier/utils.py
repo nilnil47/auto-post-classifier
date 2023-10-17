@@ -86,6 +86,23 @@ def check_JSON_format(json_data):
         logging.error(f"JSON is not valid: {e.message}")
         return False
 
+def check_JSON_format_no_exp(json_data):
+    # Define the JSON schema
+    schema = {
+        "type": "object",
+        "patternProperties": {
+            ".*_rnk$": {"type": "number"}
+        },
+        "additionalProperties": False,
+    }
+
+    # Validate the JSON data against the schema
+    try:
+        jsonschema.validate(instance=json_data, schema=schema)
+        return True
+    except jsonschema.exceptions.ValidationError as e:
+        logging.error(f"JSON is not valid: {e.message}")
+        return False
 
 def generate_score_for_df(post: pd.Series):
     weights = {

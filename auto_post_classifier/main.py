@@ -123,7 +123,7 @@ def main(
                 logger.info(f"going the parse the following text:\n {text}")
 
                 task = TaskBase(post=text)
-                task.build_prompt()
+                task.build_prompt_no_exp() #todo bring back
                 for j in range(iter_num + 1):
                     completion = utils.get_completion(task.user_prompt, task.sys_prompt)
 
@@ -134,7 +134,7 @@ def main(
                         continue
 
 
-                    if utils.JSON_rank_to_number(response) and utils.check_JSON_format(response):
+                    if utils.JSON_rank_to_number(response) and utils.check_JSON_format_no_exp(response): #todo bring back
                         response["text"] = text
                         response["score"] = utils.generate_score(response)
 

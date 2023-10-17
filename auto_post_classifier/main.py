@@ -85,7 +85,7 @@ def main(
     ] = ...,
     min_post_length: int = typer.Option(
         0,  # Default min_length value
-        help="Minimum length for filtering rows",
+        help="Minimum length for filtering posts",
     ),
 ):
     openai.api_key = openai_api_key

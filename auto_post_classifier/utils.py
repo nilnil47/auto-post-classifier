@@ -14,11 +14,11 @@ from loguru import logger
 from auto_post_classifier.api_request_parallel_processor import process_api_requests
 
 
-def create_completion_async(user_prompts, sys_prompt, openai_api_key, model ="gpt-3.5-turbo-16k", output_path ="output/responses.txt"):
+async def create_completion_async(user_prompts, sys_prompt, openai_api_key, model ="gpt-3.5-turbo-16k", output_path ="output/responses.txt"):
     requests = [{"model": model, "messages": [{"role": "system", "content": sys_prompt},
         {"role": "user", "content": user_prompt[0]}], "metadata": {"row_id": i, "text": user_prompt[1]}} for i, user_prompt in enumerate(user_prompts)]
 
-    asyncio.run(process_api_requests(requests, output_path, openai_api_key))
+    await process_api_requests(requests, output_path, openai_api_key)
 
 def parse_parallel_responses (responses):
     """Gets a list of responses. outputs 2 lists.

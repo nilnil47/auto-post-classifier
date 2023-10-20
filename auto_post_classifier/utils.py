@@ -20,7 +20,7 @@ def create_completion_async(user_prompts, sys_prompt, openai_api_key, model ="gp
 
     asyncio.run(process_api_requests(requests, output_path, openai_api_key))
 
-def parse_parallel_responses (responses, output_path):
+def parse_parallel_responses (responses):
     """Gets a list of responses. outputs 2 lists.
     First - df of the parsing of good responses
     Second - df of bad responses texts"""
@@ -38,13 +38,6 @@ def parse_parallel_responses (responses, output_path):
         if JSON_rank_to_number(response) and check_JSON_format(response):
             response["text"] = text
             response["score"] = generate_score(response)
-
-            with open(
-                    output_path,
-                    "a",
-                    encoding="utf-8",
-            ) as out_file:
-                out_file.write(f"{json.dumps(response, ensure_ascii=False)}\n")
             res_list.append(response)
         else:
             bad_responses_texts.append(text)
@@ -65,8 +58,6 @@ def read_parallel_response(file_path):
                 response_dict['pos'] = int(dictionary_list[2]['row_id'])
                 response_dict['text'] = dictionary_list[2]["text"]
                 data.append(response_dict)
-
-    os.remove(file_path)
 
     # Sort the values by the 'pos' key
     sorted_data = sorted(data, key=lambda x: x['pos'])

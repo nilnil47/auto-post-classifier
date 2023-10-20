@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 from json import JSONDecodeError
@@ -89,8 +90,8 @@ def main(
     ),
 ):
     openai.api_key = openai_api_key
-    base_path =""
-    responses_path = base_path + "output/responses.txt"
+    base_path =Path("")
+
 
     if api:
         from api import app
@@ -98,7 +99,7 @@ def main(
 
     else:
         for ext in [".csv", ".txt"]:
-            path_to_clear = output_dir / f"{output_base_filename}{ext}"
+            path_to_clear = Path(base_path) / output_dir / f"{output_base_filename}{ext}"
             logger.info(f"Checking if {path_to_clear} exists")
             if os.path.exists(path_to_clear) and not output_overwrite:
                 logger.warning("Output paths exist but overwrite flag is false")
@@ -116,12 +117,14 @@ def main(
             df = df.head(post_num)
         df["text"] = df["text"].fillna("")
 
-        user_prompts = []
-        sys_prompt="" # todo we might want this as a List
+        response_out_paths =[]
+
         text_enum = df["text"]
         res_df = pd.DataFrame()
 
         for i in range(iter_num):
+            user_prompts=[]
+            sys_prompt = ""  # todo we might want this as a List
             for i, text in enumerate(text_enum):
                 if text != "":
                     logger.info(
@@ -134,14 +137,18 @@ def main(
                     user_prompts.append((task.user_prompt, text))
                     sys_prompt = task.sys_prompt
             if len(text_enum):
+                current_datetime = datetime.datetime.now()
+                formatted_datetime = current_datetime.strftime('%Y-%m-%d_%H-%M-%S')
+                responses_path = base_path / f"responses_{formatted_datetime}.txt"
+                response_out_paths.append(responses_path)
                 utils.create_completion_async(user_prompts, sys_prompt, openai_api_key, output_path=responses_path)
-                res_list, text_enum = utils.parse_parallel_responses(utils.read_parallel_response(responses_path), base_path / output_dir / f"{output_base_filename}.txt")
+                res_list, text_enum = utils.parse_parallel_responses(utils.read_parallel_response(responses_path))
                 res_df = pd.concat([res_df, pd.DataFrame(res_list)], ignore_index=True)
 
-            #todo the results are not sorted after the second iteration
-
-
-
+        for path in response_out_paths:
+            if os.path.exists(path):
+                logger.debug(f"Removing the path {path}")
+                os.remove(path)
 
         res_df.to_csv(base_path / output_dir / f"{output_base_filename}.csv")
 

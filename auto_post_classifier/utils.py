@@ -46,6 +46,7 @@ def read_parallel_response(file_path):
 
     # todo currently I open all the generated output at once.
     #  if we are dealing with a large amount of generated data we might not have enough memory
+
     data = []
     with open(file_path, 'r') as file:
         for line in file:
@@ -56,10 +57,11 @@ def read_parallel_response(file_path):
                 response_dict['text'] = dictionary_list[2]["text"]
                 data.append(response_dict)
 
+    # todo do we need sorting?
     # Sort the values by the 'pos' key
     sorted_data = sorted(data, key=lambda x: x['pos'])
 
-    # Extract just the 'val' values
+    # Extract just the responses of GPT
     return [(item['choices'][0]['message']['content'], item['text']) for item in sorted_data]
 
 

@@ -119,12 +119,12 @@ def main(
         df["text"] = df["text"].fillna("")
 
         response_out_paths =[]
-
         text_enum = df["text"]
 
         res_df = asyncio.run(main_loop_async(base_path, iter_num, openai_api_key, post_num,
                            response_out_paths, text_enum))
 
+        # delete the response_{DT}.txt files that were created
         for path in response_out_paths:
             if os.path.exists(path):
                 logger.debug(f"Removing the path {path}")
@@ -134,13 +134,16 @@ def main(
 
 
 async def main_loop_async(base_path, iter_num, openai_api_key, post_num, response_out_paths,
-              text_enum):
+                          posts_enum):
+    """asynchronous. Generates gpt responses for all posts in 'posts_enum'.
+    returns the results as data frame."""
+
     res_df = pd.DataFrame()
 
     for i in range(iter_num):
         user_prompts = []
         sys_prompt = ""  # todo we might want this as a List
-        for i, text in enumerate(text_enum):
+        for i, text in enumerate(posts_enum):
             if text != "":
                 logger.info(
                     f"------------------- {i} / {post_num} -------------------------"
@@ -151,14 +154,14 @@ async def main_loop_async(base_path, iter_num, openai_api_key, post_num, respons
                 task.build_prompt()
                 user_prompts.append((task.user_prompt, text))
                 sys_prompt = task.sys_prompt
-        if len(text_enum):
+        if len(posts_enum):
             current_datetime = datetime.datetime.now()
             formatted_datetime = current_datetime.strftime('%Y-%m-%d_%H-%M-%S')
             responses_path = base_path / f"responses_{formatted_datetime}.txt"
             response_out_paths.append(responses_path)
             await utils.create_completion_async(user_prompts, sys_prompt, openai_api_key,
                                           output_path=responses_path)
-            res_list, text_enum = utils.parse_parallel_responses(
+            res_list, posts_enum = utils.parse_parallel_responses(
                 utils.read_parallel_response(responses_path))
             res_df = pd.concat([res_df, pd.DataFrame(res_list)], ignore_index=True)
     return res_df

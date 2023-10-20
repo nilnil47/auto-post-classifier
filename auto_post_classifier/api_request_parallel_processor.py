@@ -90,22 +90,21 @@ The script is structured as follows:
         - task_id_generator_function (yields 1, 2, 3, ...)
     - Run main()
 """
-from typing import List
-
-# imports
-import aiohttp  # for making API calls concurrently
-import argparse  # for running script from command line
 import asyncio  # for running API calls concurrently
 import json  # for saving results to a jsonl file
 import logging  # for logging rate limit warnings and other messages
-import os  # for reading API key
 import re  # for matching endpoint from request URL
-import tiktoken  # for counting tokens
 import time  # for sleeping after rate limit is hit
 from dataclasses import (
     dataclass,
     field,
 )  # for storing API inputs, outputs, and metadata
+from typing import List
+
+# imports
+import aiohttp  # for making API calls concurrently
+import tiktoken  # for counting tokens
+
 
 def check():
     print("hello")

@@ -89,6 +89,8 @@ def main(
     ),
 ):
     openai.api_key = openai_api_key
+    base_path =""
+    responses_path = base_path + "output/responses.txt"
 
     if api:
         from api import app
@@ -114,40 +116,34 @@ def main(
             df = df.head(post_num)
         df["text"] = df["text"].fillna("")
 
-        lst = []
-        for i, text in enumerate(df["text"].head(post_num)):
-            if text != "":
-                logger.info(
-                    f"------------------- {i} / {post_num} -------------------------"
-                )
-                logger.info(f"going the parse the following text:\n {text}")
+        user_prompts = []
+        sys_prompt="" # todo we might want this as a List
+        text_enum = df["text"]
+        res_df = pd.DataFrame()
 
-                task = TaskBase(post=text)
-                task.build_prompt()
-                for j in range(iter_num + 1):
-                    completion = utils.get_completion(task.user_prompt, task.sys_prompt)
+        for i in range(iter_num):
+            for i, text in enumerate(text_enum):
+                if text != "":
+                    logger.info(
+                        f"------------------- {i} / {post_num} -------------------------"
+                    )
+                    logger.info(f"going the parse the following text:\n {text}")
 
-                    try:
-                        response = json.loads(completion)
-                    except JSONDecodeError:
-                        logger.error(f"bad JSON format: {completion}")
-                        continue
+                    task = TaskBase(post=text)
+                    task.build_prompt()
+                    user_prompts.append((task.user_prompt, text))
+                    sys_prompt = task.sys_prompt
+            if len(text_enum):
+                utils.create_completion_async(user_prompts, sys_prompt, openai_api_key, output_path=responses_path)
+                res_list, text_enum = utils.parse_parallel_responses(utils.read_parallel_response(responses_path), base_path / output_dir / f"{output_base_filename}.txt")
+                res_df = pd.concat([res_df, pd.DataFrame(res_list)], ignore_index=True)
+
+            #todo the results are not sorted after the second iteration
 
 
-                    if utils.JSON_rank_to_number(response) and utils.check_JSON_format(response):
-                        response["text"] = text
-                        response["score"] = utils.generate_score(response)
 
-                        with open(
-                            output_dir / f"{output_base_filename}.txt",
-                            "a",
-                            encoding="utf-8",
-                        ) as out_file:
-                            out_file.write(f"{json.dumps(response, ensure_ascii=False)}\n")
-                        lst.append(response)
-                        break
-        res = pd.DataFrame(lst)
-        res.to_csv(output_dir / f"{output_base_filename}.csv")
+
+        res_df.to_csv(base_path / output_dir / f"{output_base_filename}.csv")
 
 
 if __name__ == "__main__":

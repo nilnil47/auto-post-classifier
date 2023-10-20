@@ -5,6 +5,8 @@ from json import JSONDecodeError
 import pandas as pd
 import typer
 from typing_extensions import Annotated
+from typing import Optional
+
 from loguru import logger
 from rich.console import Console
 from pathlib import Path
@@ -34,7 +36,7 @@ def main(
             readable=True,
             resolve_path=True,
         ),
-    ],
+    ] = None,
     output_dir: Annotated[
         Path,
         typer.Option(
@@ -80,7 +82,7 @@ def main(
         bool, typer.Option(help="Whether to overwrite results or not")
     ] = False,
     api: Annotated[
-        bool, typer.Option(help="Wheter to use api mode")
+        bool, typer.Option(help="Wheter to use api mode", envvar="API")
     ] = False,
     openai_api_key: Annotated[
         str, typer.Option(help="API key for OpenAI", envvar="OPENAI_API_KEY")

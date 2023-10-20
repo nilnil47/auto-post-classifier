@@ -9,6 +9,7 @@ services:
       - "./logs:/app/logs"
       - "./output:/app/output"
       - "./data:/app/data"
+      - ".env:/app/e.env"
 
   auto-post-classifer-api:
     build:
@@ -19,3 +20,9 @@ services:
       - "80:80"
     volumes:
       - "./logs:/app/logs"
+      - "./output:/app/output"
+      - "./data:/app/data"
+      - ".env:/app/e.env"
+    # entrypoint:
+    #   - echo
+    #   - "API is running"

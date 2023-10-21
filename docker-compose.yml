@@ -23,6 +23,3 @@ services:
       - "./output:/app/output"
       - "./data:/app/data"
       - ".env:/app/e.env"
-    # entrypoint:
-    #   - echo
-    #   - "API is running"

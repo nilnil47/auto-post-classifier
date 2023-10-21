@@ -10,9 +10,13 @@ class TaskBase(BaseModel):
     def build_prompt(self):
         self.prompt = f""" Provided with a post enclosed by three backticks you need to return a
 ranking of the post in the following dimensions:
+- antisemitism
+- graphic violence 
 - weapons
-- violence
+- call for violence operation
 - political content
+- supporting in terror
+- misinformation
 
 For each dimension, use the following ranking:
 -1 - means that the dimension is not contained in the post
@@ -23,19 +27,35 @@ The 'explanation' should give a reasoning for choosing the ranking.
 
 The result should be provided as a JSON having the following format:
 {{
-    "weapons_exp": Explanation whether the post contains content related to weapons,
-    "weapons_rnk": -1, 0 or 1 ranking of the weapons dimension,
 
-    "violence_exp": Explanation whether the post contains content related to violence,
-    "violence_rnk": -1, 0 or 1 ranking of the violence dimension,
+    "antisemitism_exp": "Explanation whether the post contains content related to antisemitism",
+    "antisemitism_rnk": "-1, 0, or 1 ranking of the antisemitism dimension",
 
-    "political_exp": Explanation whether the post contains content related to politics,
-    "political_rnk": -1, 0 or 1 ranking of the political content dimension
+    "graphic_violence_exp": "Explanation whether the post contains content related to graphic violence",
+    "graphic_violence_rnk": "-1, 0, or 1 ranking of the graphic violence dimension",
 
-    "summary": summary of the post in max 3 lines
+    "weapons_exp": "Explanation whether the post contains content related to weapons",
+    "weapons_rnk": "-1, 0, or 1 ranking of the weapons dimension",
+
+    "call_for_violence_operation_exp": "Explanation whether the post contains content related to a call for violence operation",
+    "call_for_violence_operation_rnk": "-1, 0, or 1 ranking of the call for violence operation dimension",
+
+    "political_content_exp": "Explanation whether the post contains political content",
+    "political_content_rnk": "-1, 0, or 1 ranking of the political content dimension",
+
+    "supporting_in_terror_exp": "Explanation whether the post contains content supporting terrorism",
+    "supporting_in_terror_rnk": "-1, 0, or 1 ranking of the supporting in terror dimension",
+
+    "misinformation_exp": "Explanation whether the post contains misinformation",
+    "misinformation_rnk": "-1, 0, or 1 ranking of the misinformation dimension",
+
+    "summary": "Summary of the post in max 3 lines"
 }}
 
+where * is replace with each dimensions
 ```
 {self.post}
 ```
 """
+        
+        

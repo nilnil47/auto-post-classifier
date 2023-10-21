@@ -1,0 +1,15 @@
+version: "3"
+services:
+  auto-post-classifer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: auto-post-classifer:latest
+    ports:
+      - "80:80"
+    volumes:
+      - "./logs:/app/logs"
+      - "./output:/app/output"
+      - "./data:/app/data"
+      - ".env:/app/.env"
+      - "./entrypoint.sh:/app/entrypoint.sh"

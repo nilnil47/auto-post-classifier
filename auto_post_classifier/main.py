@@ -36,7 +36,7 @@ def main(
             readable=True,
             resolve_path=True,
         ),
-    ] = None,
+    ],
     output_dir: Annotated[
         Path,
         typer.Option(

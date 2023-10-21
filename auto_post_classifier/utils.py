@@ -163,6 +163,10 @@ def check_JSON_format_no_exp(json_data):
         return False
 
 def generate_score_for_df(post: pd.Series):
+    """
+    generate score for according to gpt reankings
+    if analizing the result throught loading data frame
+    """
     weights = {
     "antisemitism": 0.15,
     "graphic_violence": 0.15,
@@ -180,6 +184,10 @@ def generate_score_for_df(post: pd.Series):
     return post
 
 def generate_score(post: dict):
+    """
+    generate score for according to gpt reankings
+    while using the app
+    """
     weights = {
     "antisemitism": 0.15,
     "graphic_violence": 0.15,

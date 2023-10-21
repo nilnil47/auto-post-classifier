@@ -7,16 +7,21 @@ import openai
 import pandas as pd
 import typer
 import uvicorn
+from typing_extensions import Annotated
+from typing import Optional
+
 from loguru import logger
 from rich.console import Console
 from typing_extensions import Annotated
 
 from auto_post_classifier import utils
 from auto_post_classifier.models import TaskBase
+from dotenv import load_dotenv
 
 # todo: change the Path object
+load_dotenv()
 console = Console()
-logger.add("file_{time}.log")
+logger.add(os.path.join("logs", "file_{time}.log"))
 
 
 def main(
@@ -77,7 +82,7 @@ def main(
         bool, typer.Option(help="Whether to overwrite results or not")
     ] = False,
     api: Annotated[
-        bool, typer.Option(help="Wheter to use api mode")
+        bool, typer.Option(help="Wheter to use api mode", envvar="API")
     ] = False,
     openai_api_key: Annotated[
         str, typer.Option(help="API key for OpenAI", envvar="OPENAI_API_KEY")
@@ -93,8 +98,9 @@ def main(
 
     if api:
         from api import app
-        uvicorn.run(app, host="0.0.0.0", port=8000)
-
+        uvicorn.run(app, host="0.0.0.0", port=80)
+        typer.Exit(0)
+        
     else:
         for ext in [".csv", ".txt"]:
             path_to_clear = Path(base_path) / output_dir / f"{output_base_filename}{ext}"

@@ -16,7 +16,7 @@ iter_num = 2
 app = FastAPI()
 
 @app.post("/rank")
-def read_root(post: Post):
+def process_post(post: Post):
     logger.info(f"going the parse the following text:\n {post.text}")
     task = TaskBase(post=post.text)
     task.build_prompt()
@@ -37,5 +37,7 @@ def read_root(post: Post):
             response["text"] = post.text
             response["score"] = utils.generate_score(response)
             return response
+        
+    logger.error("fail to process responses after all attempts")
 
     

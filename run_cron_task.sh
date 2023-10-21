@@ -1,2 +1,2 @@
 #!/bin/bash
-docker compose -f ~/projects/foa/auto-post-classifier/docker-compose.yml up
+docker-compose -f ~/git/auto-post-classifier/docker-compose.yml up

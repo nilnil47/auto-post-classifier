@@ -20,6 +20,8 @@ pydantic = "^2.4.2"
 openai = "^0.28.1"
 pydantic-settings = "^2.0.3"
 jsonschema = "^4.19.1"
+fastapi = "^0.103.2"
+uvicorn = "^0.23.2"
 
 
 [tool.poetry.group.dev.dependencies]

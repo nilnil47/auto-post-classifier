@@ -4,8 +4,6 @@ import jsonschema as jsonschema
 import openai
 import pandas as pd
 
-from loguru import logger
-
 
 def get_completion(prompt, model="gpt-3.5-turbo-16k"):
     messages = [{"role": "user", "content": prompt}]
@@ -49,6 +47,10 @@ def check_JSON_format(json_data):
         return False
 
 def generate_score_for_df(post: pd.Series):
+    """
+    generate score for according to gpt reankings
+    if analizing the result throught loading data frame
+    """
     weights = {
     "antisemitism": 0.15,
     "graphic_violence": 0.15,
@@ -66,6 +68,10 @@ def generate_score_for_df(post: pd.Series):
     return post
 
 def generate_score(post: dict):
+    """
+    generate score for according to gpt reankings
+    while using the app
+    """
     weights = {
     "antisemitism": 0.15,
     "graphic_violence": 0.15,

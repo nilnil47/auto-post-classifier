@@ -17,4 +17,4 @@ RUN pip install poetry && \
 # COPY auto_post_classifier /app
 
 # # Specify the command to run your application
-CMD ["poetry", "run", "python", "auto_post_classifier/main.py"]
+CMD ["./entrypoint.sh"]

@@ -11,4 +11,5 @@ services:
       - "./logs:/app/logs"
       - "./output:/app/output"
       - "./data:/app/data"
-      - ".env:/app/e.env"
+      - ".env:/app/.env"
+      - "./entrypoint.sh:/app/entrypoint.sh"

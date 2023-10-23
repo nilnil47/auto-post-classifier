@@ -49,7 +49,8 @@ def check_JSON_format(json_data):
 
 def generate_score_for_df(post: pd.Series):
     """
-    Generate score according to GPT rankings if analizing the result by loading data frame
+    Generate score according to GPT rankings if analizing the result by
+    loading data frame
     """
     weights = {
         "antisemitism": 0.15,

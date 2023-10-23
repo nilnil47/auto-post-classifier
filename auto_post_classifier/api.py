@@ -7,13 +7,15 @@ from loguru import logger
 
 from pydantic import BaseModel
 
+
 class Post(BaseModel):
     text: str
     content_url: str
 
 
-iter_num = 2 
+iter_num = 2
 app = FastAPI()
+
 
 @app.post("/rank")
 def process_post(post: Post):
@@ -21,7 +23,7 @@ def process_post(post: Post):
     task = TaskBase(post=post.text)
     task.build_prompt()
 
-    # fixme: replace to iternum 
+    # fixme: replace to iternum
     for j in range(iter_num + 1):
         completion = utils.get_completion(task.prompt)
 
@@ -35,7 +37,5 @@ def process_post(post: Post):
             response["text"] = post.text
             response["score"] = utils.generate_score(response)
             return response
-        
-    logger.error("fail to process responses after all attempts")
 
-    
+    logger.error("fail to process responses after all attempts")

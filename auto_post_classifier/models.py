@@ -11,7 +11,7 @@ class TaskBase(BaseModel):
         self.prompt = f""" Provided with a post enclosed by three backticks you need to return a
 ranking of the post in the following dimensions:
 - antisemitism
-- graphic violence 
+- graphic violence
 - weapons
 - call for violence operation
 - political content
@@ -56,6 +56,4 @@ where * is replace with each dimensions
 ```
 {self.post}
 ```
-"""
-        
-        
+"""  # noqa: E501

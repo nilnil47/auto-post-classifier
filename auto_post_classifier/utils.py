@@ -46,43 +46,43 @@ def check_JSON_format(json_data):
         logging.error(f"JSON is not valid: {e.message}")
         return False
 
+
 def generate_score_for_df(post: pd.Series):
     """
-    generate score for according to gpt reankings
-    if analizing the result throught loading data frame
+    Generate score according to GPT rankings if analizing the result by loading data frame
     """
     weights = {
-    "antisemitism": 0.15,
-    "graphic_violence": 0.15,
-    "weapons": 0.10,
-    "call_for_violence_operation": 0.10,
-    "political_content": 0.15,
-    "supporting_in_terror": 0.15,
-    "misinformation": 0.20
-}
+        "antisemitism": 0.15,
+        "graphic_violence": 0.15,
+        "weapons": 0.10,
+        "call_for_violence_operation": 0.10,
+        "political_content": 0.15,
+        "supporting_in_terror": 0.15,
+        "misinformation": 0.20,
+    }
     score = 0
     for dimension in weights:
         score += post[dimension + "_rnk"] * weights[dimension]
-    
-    post['score'] = score
+
+    post["score"] = score
     return post
+
 
 def generate_score(post: dict):
     """
-    generate score for according to gpt reankings
-    while using the app
+    Generate score according to GPT rankings while using the app
     """
     weights = {
-    "antisemitism": 0.15,
-    "graphic_violence": 0.15,
-    "weapons": 0.10,
-    "call_for_violence_operation": 0.10,
-    "political_content": 0.15,
-    "supporting_in_terror": 0.15,
-    "misinformation": 0.20
-}
+        "antisemitism": 0.15,
+        "graphic_violence": 0.15,
+        "weapons": 0.10,
+        "call_for_violence_operation": 0.10,
+        "political_content": 0.15,
+        "supporting_in_terror": 0.15,
+        "misinformation": 0.20,
+    }
     score = 0
     for dimension in weights:
         score += float(post[dimension + "_rnk"]) * weights[dimension]
-    
+
     return score

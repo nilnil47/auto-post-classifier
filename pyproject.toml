@@ -26,6 +26,9 @@ uvicorn = "^0.23.2"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.25.2"
+flake8 = "^6.1.0"
+black = "^23.10.0"
+isort = "^5.12.0"
 
 [tool.poetry.scripts]
 auto-post-classifier = "auto_post_classifier.main:main"
@@ -33,3 +36,6 @@ auto-post-classifier = "auto_post_classifier.main:main"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"

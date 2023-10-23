@@ -1,0 +1,31 @@
+name: Code Style Checks
+
+on: pull_request
+
+env:
+    POETRY_HOME: /opt/poetry
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Set up Make
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install make
+      shell: bash
+
+    - name: Set up Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org > /tmp/install-poetry.py
+        python3 /tmp/install-poetry.py --version 1.5.1
+      shell: bash
+
+    # - name: Run Makefile Target
+    #   run: |
+    #     make your-target-name
+    #   shell: bash

@@ -19,13 +19,19 @@ jobs:
         sudo apt-get -y install make
       shell: bash
 
-    - name: Set up Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org > /tmp/install-poetry.py
-        python3 /tmp/install-poetry.py --version 1.5.1
-      shell: bash
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+            version: 1.5.1
+            virtualenvs-create: true
+            virtualenvs-in-project: false
+            installer-parallel: true
 
-    # - name: Run Makefile Target
-    #   run: |
-    #     make your-target-name
-    #   shell: bash
+    - name: Setup virtual environment
+      run: |
+        poetry install
+
+    - name: Run code verification
+      run: |
+        make code_style_validation
+      shell: bash

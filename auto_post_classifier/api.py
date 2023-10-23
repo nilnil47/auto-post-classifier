@@ -1,11 +1,12 @@
-from fastapi import FastAPI
-from auto_post_classifier.models import TaskBase
-import auto_post_classifier.utils as utils
 import json
 from json import JSONDecodeError
-from loguru import logger
 
+from fastapi import FastAPI
+from loguru import logger
 from pydantic import BaseModel
+
+import auto_post_classifier.utils as utils
+from auto_post_classifier.models import TaskBase
 
 
 class Post(BaseModel):

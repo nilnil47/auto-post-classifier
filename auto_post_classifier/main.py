@@ -1,21 +1,19 @@
 import json
 import os
 from json import JSONDecodeError
-
-import pandas as pd
-import typer
-from typing_extensions import Annotated
-
-from loguru import logger
-from rich.console import Console
 from pathlib import Path
-from auto_post_classifier import utils
-from auto_post_classifier.models import TaskBase
-from dotenv import load_dotenv
 
 import openai
+import pandas as pd
+import typer
 import uvicorn
+from dotenv import load_dotenv
+from loguru import logger
+from rich.console import Console
+from typing_extensions import Annotated
 
+from auto_post_classifier import utils
+from auto_post_classifier.models import TaskBase
 
 # todo: change the Path object
 load_dotenv()

@@ -25,6 +25,12 @@ poetry run python auto_post_classifier/main.py
 
 Use this method during dev.
 
+### install as systemd service
+
+```
+sudo cp auto-post-classifier.service /etc/systemd/system/auto-post-classifier.service
+```
+
 ### Indirectly
 
 First start the environment with `poetry shell` executed from the project's root directory and then simply execute `auto-post-classifier`
@@ -32,3 +38,25 @@ First start the environment with `poetry shell` executed from the project's root
 ## install poetry
 
 https://python-poetry.org/docs/
+
+## interaction with the production
+
+```
+# scp
+```
+
+### interaction with the systemd service
+
+```
+# start the service
+sudo systemctl start auto-post-classifier
+
+# stop the service
+sudo systemctl stop auto-post-classifier
+
+# see status (and runtime logs)
+sudo systemctl status auto-post-classifier
+
+# see past logs
+journalctl -u auto-post-classifier --since yesterday
+```

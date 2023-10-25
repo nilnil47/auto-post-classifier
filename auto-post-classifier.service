@@ -1,0 +1,11 @@
+
+[Unit]
+Description=auto post classifer app
+
+[Service]
+ExecStart=docker-compose up 
+WorkingDirectory=/home/ec2-user/git/auto-post-classifier
+User=ec2-user
+
+[Install]
+WantedBy=multi-user.target

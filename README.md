@@ -5,6 +5,13 @@
 Run `poetry install` from the root of the project.
 This should get you all you need.
 
+## Code Style and Conventions
+
+- Make sure you use [Black](https://black.readthedocs.io/en/stable/) and
+- sort the imports using [isort](https://pycqa.github.io/isort/)
+
+Code that doesn't pass the tests in [`code_style_validation`] target of the `Makefile` won't be accepted.
+
 ## Run the script
 
 The script should be installed as an executable in the environment created by `poetry` (see above).

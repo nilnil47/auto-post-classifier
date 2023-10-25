@@ -1,0 +1,37 @@
+name: Code Style Checks
+
+on: pull_request
+
+env:
+    POETRY_HOME: /opt/poetry
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Set up Make
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install make
+      shell: bash
+
+    - name: Install and configure Poetry
+      uses: snok/install-poetry@v1
+      with:
+            version: 1.5.1
+            virtualenvs-create: true
+            virtualenvs-in-project: false
+            installer-parallel: true
+
+    - name: Setup virtual environment
+      run: |
+        poetry install
+
+    - name: Run code verification
+      run: |
+        make code_style_validation
+      shell: bash

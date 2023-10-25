@@ -8,7 +8,7 @@ class TaskBase(BaseModel):
     user_prompt: Optional[str] = None
     sys_prompt: Optional[str] = None
 
-
+      
     def build_prompt(self):
         self.user_prompt = f"""Here is some context:
 @@In recent news, a bold and unprecedented attack was carried out by the Palestinian militant group Hamas against Israel. 
@@ -114,5 +114,4 @@ Provide an explanation for each ranking.
         -1: The dimension is not present in the post.
         0: It's unclear if the dimension is in the post.
         1: The dimension is highly likely to be in the post.
-
-        """
+"""  # noqa: E501

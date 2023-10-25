@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import os
+from json import JSONDecodeError
 from pathlib import Path
 
 import openai
@@ -10,13 +11,13 @@ import uvicorn
 from typing_extensions import Annotated
 from typing import Optional
 
+from dotenv import load_dotenv
 from loguru import logger
 from rich.console import Console
 from typing_extensions import Annotated
 
 from auto_post_classifier import utils
 from auto_post_classifier.models import TaskBase
-from dotenv import load_dotenv
 
 # todo: change the Path object
 load_dotenv()
@@ -98,9 +99,10 @@ def main(
 
     if api:
         from api import app
+
         uvicorn.run(app, host="0.0.0.0", port=80)
         typer.Exit(0)
-        
+
     else:
         for ext in [".csv", ".txt"]:
             path_to_clear = Path(base_path) / output_dir / f"{output_base_filename}{ext}"

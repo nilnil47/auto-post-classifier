@@ -3,10 +3,12 @@ API REQUEST PARALLEL PROCESSOR
 
 Using the OpenAI API to process lots of text quickly takes some care.
 If you trickle in a million API requests one by one, they'll take days to complete.
-If you flood a million API requests in parallel, they'll exceed the rate limits and fail with errors.
-To maximize throughput, parallel requests need to be throttled to stay under rate limits.
+If you flood a million API requests in parallel, they'll exceed the rate limits and
+fail with errors. To maximize throughput, parallel requests need to be throttled to
+stay under rate limits.
 
-This script parallelizes requests to the OpenAI API while throttling to stay under rate limits.
+This script parallelizes requests to the OpenAI API while throttling to stay
+under rate limits.
 
 Features:
 - Streams requests from file, to avoid running out of memory for giant jobs
@@ -31,14 +33,20 @@ python examples/api_request_parallel_processor.py \
 Inputs:
 - requests_filepath : str
     - path to the file containing the requests to be processed
-    - file should be a jsonl file, where each line is a json object with API parameters and an optional metadata field
-    - e.g., {"model": "text-embedding-ada-002", "input": "embed me", "metadata": {"row_id": 1}}
-    - as with all jsonl files, take care that newlines in the content are properly escaped (json.dumps does this automatically)
-    - an example file is provided at examples/data/example_requests_to_parallel_process.jsonl
+    - file should be a jsonl file, where each line is a json object with API
+      parameters and an optional metadata field
+    - e.g.:
+      { "model": "text-embedding-ada-002",
+        "input": "embed me", "metadata": {"row_id": 1}}
+    - as with all jsonl files, take care that newlines in the
+      content are properly escaped (json.dumps does this automatically)
+    - an example file is provided at
+      examples/data/example_requests_to_parallel_process.jsonl
     - the code to generate the example file is appended to the bottom of this script
 - save_filepath : str, optional
     - path to the file where the results will be saved
-    - file will be a jsonl file, where each line is an array with the original request plus the API response
+    - file will be a jsonl file, where each line is an array with the original request
+      plus the API response
     - e.g., [{"model": "text-embedding-ada-002", "input": "embed me"}, {...}]
     - if omitted, results will be saved to {requests_filename}_results.jsonl
 - request_url : str, optional
@@ -46,11 +54,13 @@ Inputs:
     - if omitted, will default to "https://api.openai.com/v1/chat/completions"
 - api_key : str, optional
     - API key to use
-    - if omitted, the script will attempt to read it from an environment variable {os.getenv("OPENAI_API_KEY")}
+    - if omitted, the script will attempt to read it from an environment variable
+      {os.getenv("OPENAI_API_KEY")}
 - max_requests_per_minute : float, optional
     - target number of requests to make per minute (will make less if limited by tokens)
     - leave headroom by setting this to 50% or 75% of your limit
-    - if requests are limiting you, try batching multiple embeddings or completions into one request
+    - if requests are limiting you, try batching multiple embeddings
+      or completions into one request
     - if omitted, will default to 1,500
 - max_tokens_per_minute : float, optional
     - target number of tokens to use per minute (will use less if limited by requests)
@@ -86,7 +96,8 @@ The script is structured as follows:
     - Define functions
         - api_endpoint_from_url (extracts API endpoint from request URL)
         - append_to_jsonl (writes to results file)
-        - num_tokens_consumed_from_request (bigger function to infer token usage from request)
+        - num_tokens_consumed_from_request (bigger function to infer
+          token usage from request)
         - task_id_generator_function (yields 1, 2, 3, ...)
     - Run main()
 """
@@ -95,10 +106,10 @@ import json  # for saving results to a jsonl file
 import logging  # for logging rate limit warnings and other messages
 import re  # for matching endpoint from request URL
 import time  # for sleeping after rate limit is hit
-from dataclasses import (
+from dataclasses import (  # for storing API inputs, outputs, and metadata
     dataclass,
     field,
-)  # for storing API inputs, outputs, and metadata
+)
 from typing import List
 
 # imports
@@ -109,12 +120,13 @@ import tiktoken  # for counting tokens
 def check():
     print("hello")
 
+
 async def process_api_requests(
     request_list: List[dict],
     save_filepath: str,
     api_key: str,
     request_url: str = "https://api.openai.com/v1/chat/completions",
-    max_requests_per_minute : float = 3_500 * 0.5,
+    max_requests_per_minute: float = 3_500 * 0.5,
     max_tokens_per_minute: float = 180_000 * 0.5,
     token_encoding_name: str = "cl100k_base",
     max_attempts: int = 2,
@@ -152,7 +164,7 @@ async def process_api_requests(
 
     # initialize flags
     file_not_finished = True  # after file is empty, we'll skip reading it
-    logging.debug(f"Initialization complete.")
+    logging.debug("Initialization complete.")
 
     # `posts` will provide posts one at a time
     requests = request_list.__iter__()
@@ -168,7 +180,7 @@ async def process_api_requests(
                 elif file_not_finished:
                     try:
                         # get new request
-                        request_json = next(requests) #json.loads(next(requests))
+                        request_json = next(requests)  # json.loads(next(requests))
                         next_request = APIRequest(
                             task_id=next(task_id_generator),
                             request_json=request_json,
@@ -239,31 +251,31 @@ async def process_api_requests(
             seconds_since_rate_limit_error = (
                 time.time() - status_tracker.time_of_last_rate_limit_error
             )
-            if (
-                seconds_since_rate_limit_error
-                < seconds_to_pause_after_rate_limit_error
-            ):
+            if seconds_since_rate_limit_error < seconds_to_pause_after_rate_limit_error:
                 remaining_seconds_to_pause = (
                     seconds_to_pause_after_rate_limit_error
                     - seconds_since_rate_limit_error
                 )
                 await asyncio.sleep(remaining_seconds_to_pause)
                 # ^e.g., if pause is 15 seconds and final limit was hit 5 seconds ago
-                logging.warn(
-                    f"Pausing to cool down until {time.ctime(status_tracker.time_of_last_rate_limit_error + seconds_to_pause_after_rate_limit_error)}"
+                tmp_time = time.ctime(
+                    status_tracker.time_of_last_rate_limit_error
+                    + seconds_to_pause_after_rate_limit_error
                 )
+                logging.warn(f"Pausing to cool down until {tmp_time}")
 
     # after finishing, log final status
-    logging.info(
-        f"""Parallel processing complete. Results saved to {save_filepath}"""
-    )
+    logging.info(f"""Parallel processing complete. Results saved to {save_filepath}""")
     if status_tracker.num_tasks_failed > 0:
         logging.warning(
-            f"{status_tracker.num_tasks_failed} / {status_tracker.num_tasks_started} requests failed. Errors logged to {save_filepath}."
+            f"{status_tracker.num_tasks_failed} /"
+            f" {status_tracker.num_tasks_started} requests failed. Errors logged to"
+            f" {save_filepath}."
         )
     if status_tracker.num_rate_limit_errors > 0:
         logging.warning(
-            f"{status_tracker.num_rate_limit_errors} rate limit errors received. Consider running at a lower rate."
+            f"{status_tracker.num_rate_limit_errors} rate limit errors received."
+            " Consider running at a lower rate."
         )
 
 
@@ -286,7 +298,8 @@ class StatusTracker:
 
 @dataclass
 class APIRequest:
-    """Stores an API request's inputs, outputs, and other metadata. Contains a method to make an API call."""
+    """Stores an API request's inputs, outputs, and other metadata.
+    Contains a method to make an API call."""
 
     task_id: int
     request_json: dict
@@ -325,9 +338,9 @@ class APIRequest:
                         1  # rate limit errors are counted separately
                     )
 
-        except (
-            Exception
-        ) as e:  # catching naked exceptions is bad practice, but in this case we'll log & save them
+        except Exception as e:
+            # catching naked exceptions is bad practice,
+            # but in this case we'll log & save them
             logging.warning(f"Request {self.task_id} failed with Exception {e}")
             status_tracker.num_other_errors += 1
             error = e
@@ -337,7 +350,8 @@ class APIRequest:
                 retry_queue.put_nowait(self)
             else:
                 logging.error(
-                    f"Request {self.request_json} failed after all attempts. Saving errors: {self.result}"
+                    f"Request {self.request_json} failed after all attempts. Saving"
+                    f" errors: {self.result}"
                 )
                 data = (
                     [self.request_json, [str(e) for e in self.result], self.metadata]
@@ -380,7 +394,8 @@ def num_tokens_consumed_from_request(
     api_endpoint: str,
     token_encoding_name: str,
 ):
-    """Count the number of tokens in the request. Only supports completion and embedding requests."""
+    """Count the number of tokens in the request.
+    Only supports completion and embedding requests."""
     encoding = tiktoken.get_encoding(token_encoding_name)
     # if completions request, tokens = prompt + n * max_tokens
     if api_endpoint.endswith("completions"):
@@ -392,7 +407,8 @@ def num_tokens_consumed_from_request(
         if api_endpoint.startswith("chat/"):
             num_tokens = 0
             for message in request_json["messages"]:
-                num_tokens += 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
+                # every message follows <im_start>{role/name}\n{content}<im_end>\n
+                num_tokens += 4
                 for key, value in message.items():
                     num_tokens += len(encoding.encode(value))
                     if key == "name":  # if there's a name, the role is omitted
@@ -412,7 +428,8 @@ def num_tokens_consumed_from_request(
                 return num_tokens
             else:
                 raise TypeError(
-                    'Expecting either string or list of strings for "prompt" field in completion request'
+                    'Expecting either string or list of strings for "prompt" field in'
+                    " completion request"
                 )
     # if embeddings request, tokens = input tokens
     elif api_endpoint == "embeddings":
@@ -425,7 +442,8 @@ def num_tokens_consumed_from_request(
             return num_tokens
         else:
             raise TypeError(
-                'Expecting either string or list of strings for "inputs" field in embedding request'
+                'Expecting either string or list of strings for "inputs" field in'
+                " embedding request"
             )
     # more logic needed to support other API calls (e.g., edits, inserts, DALL-E)
     else:
@@ -440,4 +458,3 @@ def task_id_generator_function():
     while True:
         yield task_id
         task_id += 1
-

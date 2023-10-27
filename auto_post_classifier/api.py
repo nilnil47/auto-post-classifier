@@ -13,32 +13,45 @@ class Post(BaseModel):
     text: str
     content_url: str
 
+class JsonPosts(BaseModel):
+    posts: dict[str, Post]
 
-iter_num = 2
+class AutoPostCalassifierApi(FastAPI):
+    pass 
+
 app = FastAPI()
 
-
 @app.post("/rank")
-def process_post(post: Post):
-    logger.info(f"going the parse the following text:\n {post.text}")
-    task = TaskBase(post=post.text)
-    task.build_prompt()
-
-    # fixme: replace to iternum
-    for j in range(iter_num + 1):
-        completion = utils.get_completion(
-            user_prompt=task.user_prompt, sys_prompt=task.sys_prompt
+def process_post(json_posts: JsonPosts):
+    res_df = asyncio.run(
+            multiple_posts_loop_asunc(       
+                openai_api_key,
+                post_num,
+                response_out_paths,
+                text_enum,
+            )
         )
+    for post in json_posts:
+        task = TaskBase(post=post.text)
+        task.build_prompt()
 
-        try:
-            response = json.loads(completion)
-        except JSONDecodeError:
-            logger.error("bad JSON format: %s", completion)
-            continue
+        # fixme: replace to iternum
+        for j in range(iter_num + 1):
+            completion = utils.get_completion(
+                user_prompt=task.user_prompt, sys_prompt=task.sys_prompt
+            )
 
-        if utils.JSON_rank_to_number(response) and utils.check_JSON_format(response):
-            response["text"] = post.text
-            response["score"] = utils.generate_score(response)
-            return response
+            try:
+                response = json.loads(completion)
+            except JSONDecodeError:
+                logger.error("bad JSON format: %s", completion)
+                continue
 
-    logger.error("fail to process responses after all attempts")
+            if utils.JSON_rank_to_number(response) and utils.check_JSON_format(response):
+                response["text"] = post.text
+                response["score"] = utils.generate_score(response)
+                return response
+
+        logger.error("fail to process responses after all attempts")
+
+

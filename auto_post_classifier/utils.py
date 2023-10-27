@@ -7,6 +7,11 @@ import jsonschema as jsonschema
 import openai
 import pandas as pd
 from loguru import logger
+from models import TaskBase
+
+import asyncio
+import datetime
+import pathlib
 
 from auto_post_classifier.api_request_parallel_processor import process_api_requests
 
@@ -219,3 +224,42 @@ def generate_score(post: dict):
         score += rnk_mtpl_map[post[dimension + "_rnk"]] * weights[dimension]
 
     return score
+
+async def multiple_posts_loop_asunc(
+    openai_api_key: str, posts_dictionary: dict, iter_num, base_path:pathlib.Path):
+    """asynchronous. Generates gpt responses for all posts in 'posts_enum'.
+    returns the results as data frame."""
+
+    response_out_paths = []
+    post_num = len(posts_dictionary)
+
+    for i in range(iter_num):
+        user_prompts = []
+        sys_prompt = ""  # todo we might want this as a List
+        for uuid, text in posts_dictionary.items():
+            if text != "":
+                logger.info(
+                    f"------------------- {i} / {post_num} -------------------------"
+                )
+                logger.info(f"going the parse the following text:\n {text}")
+
+                task = TaskBase(post=text)
+                task.build_prompt()
+                user_prompts.append((task.user_prompt, text))
+                sys_prompt = task.sys_prompt
+
+        if len(posts_enum):
+            current_datetime = datetime.datetime.now()
+            formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+            responses_path = base_path / f"responses_{formatted_datetime}.txt"
+            response_out_paths.append(responses_path)
+            await create_completion_async(
+                user_prompts, sys_prompt, openai_api_key, output_path=responses_path
+            )
+            res_list, posts_enum = parse_parallel_responses(
+                read_parallel_response(responses_path)
+            )
+            res_df = pd.concat([res_df, pd.DataFrame(res_list)], ignore_index=True)
+    return res_df
+    
+

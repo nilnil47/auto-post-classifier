@@ -77,7 +77,7 @@ def main(
         bool, typer.Option(help="Turn shuffling of data on or off")
     ] = True,
     output_overwrite: Annotated[
-        bool, typer.Option(help="Whether to overwrite results or not")
+        bool, typer.Option(help="Whether to overwrite results or not", envvar="OUTPUT_OVERIDE")
     ] = False,
     api: Annotated[
         bool, typer.Option(help="Wheter to use api mode", envvar="API")

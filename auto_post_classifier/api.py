@@ -33,7 +33,14 @@ class AutoPostCalassifierApi(FastAPI):
         AutoPostCalassifierApi.base_path = base_path,
         AutoPostCalassifierApi.iter_num = iter_num,
 
-app = AutoPostCalassifierApi()
+app = AutoPostCalassifierApi(
+    title="auto post classifier",
+    description="Description of my app.",
+    version="1.0",
+    docs_url='/docs',
+    openapi_url='/openapi.json', # This line solved my issue, in my case it was a lambda function
+    redoc_url="/redoc"
+)
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):

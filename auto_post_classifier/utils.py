@@ -230,35 +230,42 @@ async def multiple_posts_loop_asunc(
     """asynchronous. Generates gpt responses for all posts in 'posts_enum'.
     returns the results as data frame."""
 
+
+
     response_out_paths = []
+    res_list = []
     post_num = len(posts_dictionary)
 
     for i in range(iter_num):
         user_prompts = []
         sys_prompt = ""  # todo we might want this as a List
         for uuid, text in posts_dictionary.items():
-            if text != "":
-                logger.info(
-                    f"------------------- {i} / {post_num} -------------------------"
-                )
-                logger.info(f"going the parse the following text:\n {text}")
+            try:
+                if text != "":
+                    logger.info(
+                        f"------------------- {i} / {post_num} -------------------------"
+                    )
+                    logger.info(f"going the parse the following text:\n {text}")
 
-                task = TaskBase(post=text)
-                task.build_prompt()
-                user_prompts.append((task.user_prompt, text))
-                sys_prompt = task.sys_prompt
+                    task = TaskBase(post=text)
+                    task.build_prompt()
+                    user_prompts.append((task.user_prompt, text))
+                    sys_prompt = task.sys_prompt
+            except Exception as e:
+                logger.error(f"Error while processing post {uuid}: {e}")
 
-        if len(posts_enum):
-            current_datetime = datetime.datetime.now()
-            formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
-            responses_path = base_path / f"responses_{formatted_datetime}.txt"
-            response_out_paths.append(responses_path)
-            await create_completion_async(
-                user_prompts, sys_prompt, openai_api_key, output_path=responses_path
-            )
-            res_list, posts_enum = parse_parallel_responses(
-                read_parallel_response(responses_path)
-            )
+    current_datetime = datetime.datetime.now()
+    formatted_datetime = current_datetime.strftime("%Y-%m-%d_%H-%M-%S")
+    responses_path = base_path / f"responses_{formatted_datetime}.txt"
+    response_out_paths.append(responses_path)
+    await create_completion_async(
+        user_prompts, sys_prompt, openai_api_key, output_path=responses_path
+    )
+    res_list, posts_enum = parse_parallel_responses(
+        read_parallel_response(responses_path)
+    )
+            
+            
     return res_list
     
 

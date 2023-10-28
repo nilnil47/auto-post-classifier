@@ -94,7 +94,13 @@ def main(
 
     if api:
         from api import app, AutoPostCalassifierApi
-        AutoPostCalassifierApi.set_params(openai_api_key, base_path, iter_num)
+        print('---------------- inter apiiiiiiii:', iter_num)
+        # todo: understand why typer give these values as tuple
+        # AutoPostCalassifierApi.set_params(openai_api_key, base_path, iter_num)
+        AutoPostCalassifierApi.iter_num = 1
+        AutoPostCalassifierApi.base_path = base_path
+        AutoPostCalassifierApi.openai_api_key = openai_api_key
+
         uvicorn.run(app, host="0.0.0.0", port=80)
         typer.Exit(0)
 
@@ -151,6 +157,7 @@ async def main_loop_async(
 
     res_df = pd.DataFrame()
 
+    print('---------------- inter:', iter_num)
     for i in range(iter_num):
         user_prompts = []
         sys_prompt = ""  # todo we might want this as a List

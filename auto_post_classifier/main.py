@@ -15,6 +15,7 @@ from typing_extensions import Annotated
 from auto_post_classifier import utils
 from auto_post_classifier.models import TaskBase
 
+
 # todo: change the Path object
 load_dotenv()
 console = Console()

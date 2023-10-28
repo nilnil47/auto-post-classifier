@@ -44,16 +44,16 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.post("/rank")
-def process_post(json_posts: dict[str, Post]):
+async def process_post(json_posts: dict[str, Post]):
     try:
-        res_df = asyncio.run(
-                utils.multiple_posts_loop_asunc(       
+        res_list = await utils.multiple_posts_loop_asunc(       
                     AutoPostCalassifierApi.openai_api_key,
                     json_posts,
                     AutoPostCalassifierApi.iter_num,
-                    AutoPostCalassifierApi.base_path))
+                    AutoPostCalassifierApi.base_path)
     except Exception as e:
         raise
+    return res_list
 
 
 

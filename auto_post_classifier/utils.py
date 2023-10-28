@@ -12,6 +12,7 @@ from models import TaskBase
 import asyncio
 import datetime
 import pathlib
+import time
 
 from auto_post_classifier.api_request_parallel_processor import process_api_requests
 
@@ -30,7 +31,7 @@ async def create_completion_async(
                 {"role": "system", "content": sys_prompt},
                 {"role": "user", "content": user_prompt[0]},
             ],
-            "metadata": {"row_id": i, "text": user_prompt[1]},
+            "metadata": {"row_id": i, "text": user_prompt[1]}
         }
         for i, user_prompt in enumerate(user_prompts)
     ]
@@ -239,17 +240,17 @@ async def multiple_posts_loop_asunc(
     for i in range(iter_num):
         user_prompts = []
         sys_prompt = ""  # todo we might want this as a List
-        for uuid, text in posts_dictionary.items():
+        for uuid, post in posts_dictionary.items():
             try:
-                if text != "":
+                if post.text != "":
                     logger.info(
                         f"------------------- {i} / {post_num} -------------------------"
                     )
-                    logger.info(f"going the parse the following text:\n {text}")
+                    logger.info(f"going the parse the following text:\n {post.text}")
 
-                    task = TaskBase(post=text)
+                    task = TaskBase(post=post.text)
                     task.build_prompt()
-                    user_prompts.append((task.user_prompt, text))
+                    user_prompts.append((task.user_prompt, post.text))
                     sys_prompt = task.sys_prompt
             except Exception as e:
                 logger.error(f"Error while processing post {uuid}: {e}")

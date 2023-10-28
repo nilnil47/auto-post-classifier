@@ -11,6 +11,13 @@ from auto_post_classifier.models import TaskBase
 import asyncio
 
 
+import logging
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+
+
 class Post(BaseModel):
     text: str
     content_url: str
@@ -27,8 +34,16 @@ class AutoPostCalassifierApi(FastAPI):
 
 app = AutoPostCalassifierApi()
 
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+	exc_str = f'{exc}'.replace('\n', ' ').replace('   ', ' ')
+	logging.error(f"{request}: {exc_str}")
+	content = {'status_code': 10422, 'message': exc_str, 'data': None}
+	return JSONResponse(content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
 @app.post("/rank")
-def process_post(json_posts: JsonPosts):
+def process_post(json_posts: dict[str, Post]):
     res_df = asyncio.run(
             utils.multiple_posts_loop_asunc(       
                 AutoPostCalassifierApi.openai_api_key,

@@ -226,7 +226,7 @@ def generate_score(post: dict):
     return score
 
 async def multiple_posts_loop_asunc(
-    openai_api_key: str, posts_dictionary: dict, iter_num, base_path:pathlib.Path):
+    openai_api_key: str, posts_dictionary: dict, iter_num: int, base_path:pathlib.Path):
     """asynchronous. Generates gpt responses for all posts in 'posts_enum'.
     returns the results as data frame."""
 
@@ -259,7 +259,6 @@ async def multiple_posts_loop_asunc(
             res_list, posts_enum = parse_parallel_responses(
                 read_parallel_response(responses_path)
             )
-            res_df = pd.concat([res_df, pd.DataFrame(res_list)], ignore_index=True)
-    return res_df
+    return res_list
     
 

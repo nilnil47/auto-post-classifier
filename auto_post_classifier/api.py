@@ -4,9 +4,11 @@ from json import JSONDecodeError
 from fastapi import FastAPI
 from loguru import logger
 from pydantic import BaseModel
-
+from pathlib import Path
 import auto_post_classifier.utils as utils
 from auto_post_classifier.models import TaskBase
+
+import asyncio
 
 
 class Post(BaseModel):
@@ -17,20 +19,24 @@ class JsonPosts(BaseModel):
     posts: dict[str, Post]
 
 class AutoPostCalassifierApi(FastAPI):
-    pass 
+    @staticmethod
+    def set_params(openai_api_key: str, base_path: Path, iter_num: int):
+        AutoPostCalassifierApi.openai_api_key = openai_api_key
+        AutoPostCalassifierApi.base_path = base_path,
+        AutoPostCalassifierApi.iter_num = iter_num,
 
-app = FastAPI()
+app = AutoPostCalassifierApi()
 
 @app.post("/rank")
 def process_post(json_posts: JsonPosts):
     res_df = asyncio.run(
-            multiple_posts_loop_asunc(       
-                openai_api_key,
-                post_num,
-                response_out_paths,
-                text_enum,
-            )
-        )
+            utils.multiple_posts_loop_asunc(       
+                AutoPostCalassifierApi.openai_api_key,
+                json_posts,
+                AutoPostCalassifierApi.iter_num,
+                AutoPostCalassifierApi.base_path))
+    
+    
     for post in json_posts:
         task = TaskBase(post=post.text)
         task.build_prompt()

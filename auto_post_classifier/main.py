@@ -93,7 +93,8 @@ def main(
     base_path = Path("")
 
     if api:
-        from api import app
+        from api import app, AutoPostCalassifierApi
+        AutoPostCalassifierApi.set_params(openai_api_key, base_path, iter_num)
         uvicorn.run(app, host="0.0.0.0", port=80)
         typer.Exit(0)
 

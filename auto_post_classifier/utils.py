@@ -18,6 +18,7 @@ from auto_post_classifier.api_request_parallel_processor import process_api_requ
 
 
 async def create_completion_async(
+        uuids,
     user_prompts,
     sys_prompt,
     openai_api_key,
@@ -31,7 +32,7 @@ async def create_completion_async(
                 {"role": "system", "content": sys_prompt},
                 {"role": "user", "content": user_prompt[0]},
             ],
-            "metadata": {"row_id": i, "text": user_prompt[1]}
+            "metadata": {"row_id": i, "text": user_prompt[1], "uuid": uuids[i]}
         }
         for i, user_prompt in enumerate(user_prompts)
     ]
@@ -39,14 +40,14 @@ async def create_completion_async(
     await process_api_requests(requests, output_path, openai_api_key)
 
 
-def parse_parallel_responses(responses):
+def parse_parallel_responses(responses, from_api: bool):
     """Gets a list of responses. outputs 2 lists.
     First - df of the parsing of good responses
     Second - df of bad responses texts"""
 
     bad_responses_texts = []
-    res_list = []
-    for completion, text in responses:
+    res_list = {} if from_api else []
+    for uuid, completion, text in responses:
         try:
             response = json.loads(completion)
         except JSONDecodeError:
@@ -57,9 +58,13 @@ def parse_parallel_responses(responses):
         if JSON_rank_to_number(response) and check_JSON_format(response):
             response["text"] = text
             response["score"] = generate_score(response)
-            res_list.append(response)
+            if from_api:
+                res_list[uuid] = response
+            else:
+                res_list.append(response)
         else:
             bad_responses_texts.append(text)
+        
     return res_list, bad_responses_texts
 
 
@@ -75,6 +80,7 @@ def read_parallel_response(file_path):
                 response_dict = dictionary_list[1]
                 response_dict["pos"] = int(dictionary_list[2]["row_id"])
                 response_dict["text"] = dictionary_list[2]["text"]
+                response_dict["uuid"] = dictionary_list[2]["uuid"]
                 data.append(response_dict)
 
     # todo do we need sorting?
@@ -83,7 +89,7 @@ def read_parallel_response(file_path):
 
     # Extract just the responses of GPT
     return [
-        (item["choices"][0]["message"]["content"], item["text"]) for item in sorted_data
+        (item["uuid"], item["choices"][0]["message"]["content"], item["text"]) for item in sorted_data
     ]
 
 
@@ -235,6 +241,7 @@ async def multiple_posts_loop_asunc(
 
     response_out_paths = []
     res_list = []
+    uuids = []
     post_num = len(posts_dictionary)
 
     for i in range(iter_num):
@@ -251,6 +258,7 @@ async def multiple_posts_loop_asunc(
                     task = TaskBase(post=post.text)
                     task.build_prompt()
                     user_prompts.append((task.user_prompt, post.text))
+                    uuids.append(uuid)
                     sys_prompt = task.sys_prompt
             except Exception as e:
                 logger.error(f"Error while processing post {uuid}: {e}")
@@ -260,12 +268,11 @@ async def multiple_posts_loop_asunc(
     responses_path = base_path / f"responses_{formatted_datetime}.txt"
     response_out_paths.append(responses_path)
     await create_completion_async(
-        user_prompts, sys_prompt, openai_api_key, output_path=responses_path
+        uuids, user_prompts, sys_prompt, openai_api_key, output_path=responses_path
     )
     res_list, posts_enum = parse_parallel_responses(
-        read_parallel_response(responses_path)
+        read_parallel_response(responses_path), from_api=True
     )
-            
             
     return res_list
     

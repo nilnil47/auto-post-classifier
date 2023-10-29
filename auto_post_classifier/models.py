@@ -9,13 +9,14 @@ class TaskBase(BaseModel):
     sys_prompt: Optional[str] = None
 
     def build_prompt(self):
-        self.user_prompt = f"""Here is some context:
-@@In recent news, a bold and unprecedented attack was carried out by the Palestinian militant group Hamas against Israel.
-This egregious assault involved approximately 3,000 assailants infiltrating Israeli territory,
-resulting in numerous casualties, including both soldiers and civilians. Dozens of hostages were also abducted.
-The attack has been marked by extreme brutality, with disturbing reports of massacres, beheadings, sexual violence,
-and the use of civilians as human shields. These actions have been widely condemned as war crimes and crimes against
-humanity under international humanitarian law.@@
+        self.user_prompt = f"""Here is some context (This is unrelated to the post):
+@@@@In recent news, a bold and unprecedented attack was carried out by the terrorist group Hamas against Israel. 
+This egregious assault involved approximately 3,000 assailants infiltrating Israeli territory, 
+resulting in numerous casualties, including both soldiers and civilians. Dozens of hostages were also abducted. 
+The attack has been marked by extreme brutality, with disturbing reports of massacres, beheadings, sexual violence, 
+and the use of civilians as human shields. These actions by terrorist group Hamas have been widely condemned as war crimes and crimes against 
+humanity under international humanitarian law.@@@@
+
 
 The result should be provided as a JSON with the following format:
 
@@ -44,6 +45,7 @@ The result should be provided as a JSON with the following format:
     "summary": "Summary of the post in a maximum of 3 lines"
 }}
 
+The post is written after the three ticks:
 ```
 {self.post}
 ```

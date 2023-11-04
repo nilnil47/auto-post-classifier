@@ -14,10 +14,10 @@ import logging
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-import auto_post_classifier.api_manager as api_manager
+import auto_post_classifier.api as api
 
 config = dotenv.dotenv_values()
-api_manager = api_manager.ApiManager(config)
+api_manager = api.ApiManager(config)
 
 
 
@@ -39,8 +39,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.post("/rank")
-async def process_posts(json_posts: dict[str, api_manager.Post]):
-    return api_manager.process_posts(json_posts)
+async def process_posts(json_posts: dict[str, api.Post]):
+    return await api_manager.process_posts(json_posts)
     # try:
     #     res_list = await utils.multiple_posts_loop_asunc(       
     #                 AutoPostCalassifierApi.openai_api_key,

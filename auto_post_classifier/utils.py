@@ -16,30 +16,6 @@ import time
 
 from auto_post_classifier.api_request_parallel_processor import process_api_requests
 
-
-def create_gpt_request(
-        uuids,
-    user_prompts,
-    sys_prompt,
-    openai_api_key,
-    model="gpt-3.5-turbo-16k",
-    output_path="output/responses.txt",
-):
-    requests = [
-        {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": sys_prompt},
-                {"role": "user", "content": user_prompt[0]},
-            ],
-            "metadata": {"row_id": i, "text": user_prompt[1], "uuid": uuids[i]}
-        }
-        for i, user_prompt in enumerate(user_prompts)
-    ]
-
-    await process_api_requests(requests, output_path, openai_api_key)
-
-
 def parse_parallel_responses(responses, from_api: bool):
     """Gets a list of responses. outputs 2 lists.
     First - df of the parsing of good responses

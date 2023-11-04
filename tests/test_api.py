@@ -1,7 +1,7 @@
 import requests
 
 # Define the URL and the text to be sent in the POST request
-url = "http://localhost:80/rank"
+url = "http://localhost:8000/rank"
 text = "This is a sample 50-word text. "  # Creating a 50-word text
 text2 = "hamas will contrall all the world, you will see"
 

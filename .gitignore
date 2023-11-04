@@ -160,5 +160,7 @@ cython_debug/
 #.idea/
 
 .DS_Store/
-
+.DS_Store
 *.csv
+
+auto_post_classifier/responses.json

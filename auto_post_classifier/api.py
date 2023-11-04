@@ -38,21 +38,11 @@ class PreRequestValidator:
      def validate(self, post: Post):
           return True
      
-class PostRequestValidator:
-     def __init__(self) -> None:
-          pass
-
-     def validate_length(self, post: Post):
-          return len(post.text ) > 10
-
-     def validate():
-          return 
 
 class ApiManager:
      def __init__(self, config) -> None:
           self.__dict__.update(config)
           self.pre_request_validator = PreRequestValidator()
-          self.post_request_validator = PostRequestValidator()
           self.gpt_handler = gpt_handler.GptHandler(
                responses_path="responses.txt",
                api_key=config['OPENAI_API_KEY']
@@ -62,11 +52,13 @@ class ApiManager:
           return json.dumps(self.__dict__, indent=2)
      
      async def process_posts(self, json_posts: dict[str, Post]):
-          for uuid, post in json_posts.items():
-               try:
+          try:
+               for uuid, post in json_posts.items():
                     if self.pre_request_validator.validate(post):
                          self.gpt_handler.add_request(uuid, post.text, gpt_handler.GPT_MODEL.GPT_3_5_16k)
-                    await self.gpt_handler.send_requests()
 
-               except Exception as e:
-                    logger.error(f"Error while processing post {uuid}: {e}")
+               await self.gpt_handler.send_requests()
+               return self.gpt_handler.read_responses()
+
+          except Exception as e:
+               logger.error(f"Error while processing the request: {e}")

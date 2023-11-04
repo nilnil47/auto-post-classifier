@@ -3,7 +3,6 @@ from json import JSONDecodeError
 
 from fastapi import FastAPI
 from loguru import logger
-from pydantic import BaseModel
 from pathlib import Path
 import auto_post_classifier.utils as utils
 from auto_post_classifier.models import TaskBase
@@ -15,26 +14,11 @@ import logging
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-
-
-class ApiManager:
-     def __init__(self, config) -> None:
-          self.__dict__.update(config)
-
-     def test():
-          return 5
-     
-     def __str__(self) -> str:
-          return json.dumps(self.__dict__, indent=2)
+import auto_post_classifier.api_manager as api_manager
 
 config = dotenv.dotenv_values()
-apiManager = ApiManager(config)
-class Post(BaseModel):
-    text: str
-    content_url: str
+api_manager = api_manager.ApiManager(config)
 
-class JsonPosts(BaseModel):
-    posts: dict[str, Post]
 
 
 app = FastAPI(
@@ -42,7 +26,7 @@ app = FastAPI(
     description="Description of my app.",
     version="1.0",
     docs_url='/docs',
-    openapi_url='/openapi.json', # This line solved my issue, in my case it was a lambda function
+    openapi_url='/openapi.json',
     redoc_url="/redoc"
 )
 
@@ -55,8 +39,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.post("/rank")
-async def process_posts(json_posts: dict[str, Post]):
-    pass
+async def process_posts(json_posts: dict[str, api_manager.Post]):
+    return api_manager.process_posts(json_posts)
     # try:
     #     res_list = await utils.multiple_posts_loop_asunc(       
     #                 AutoPostCalassifierApi.openai_api_key,
@@ -69,6 +53,6 @@ async def process_posts(json_posts: dict[str, Post]):
 
 @app.get('/config')
 def get_configuration():
-     return apiManager
+     return api_manager
 
 

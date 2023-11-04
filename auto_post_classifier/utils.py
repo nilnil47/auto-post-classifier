@@ -17,7 +17,7 @@ import time
 from auto_post_classifier.api_request_parallel_processor import process_api_requests
 
 
-async def create_completion_async(
+def create_gpt_request(
         uuids,
     user_prompts,
     sys_prompt,

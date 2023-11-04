@@ -18,16 +18,6 @@ class Post(BaseModel):
 class JsonPosts(BaseModel):
     posts: dict[str, Post]
 
-# class LLmManager:
-#      def __init__(self) -> None:
-#           self
-#      def choose_llm(post: Post):
-#           return gpt_handler.GptHandler(
-#                text=post.text,
-#                model="gpt-3.5-turbo-16k"
-#           )
-
-
 class PreRequestValidator:
      def __init__(self) -> None:
           pass
@@ -51,14 +41,11 @@ class ApiManager:
      def __str__(self) -> str:
           return json.dumps(self.__dict__, indent=2)
      
+     @logger.catch
      async def process_posts(self, json_posts: dict[str, Post]):
-          try:
-               for uuid, post in json_posts.items():
-                    if self.pre_request_validator.validate(post):
-                         self.gpt_handler.add_request(uuid, post.text, gpt_handler.GPT_MODEL.GPT_3_5_16k)
+          for uuid, post in json_posts.items():
+               if self.pre_request_validator.validate(post):
+                    self.gpt_handler.add_request(uuid, post.text, gpt_handler.GPT_MODEL.GPT_3_5_16k)
 
-               await self.gpt_handler.send_requests()
-               return self.gpt_handler.read_responses()
-
-          except Exception as e:
-               logger.error(f"Error while processing the request: {e}")
+          await self.gpt_handler.send_requests()
+          return self.gpt_handler.read_responses()

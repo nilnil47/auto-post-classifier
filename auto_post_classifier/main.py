@@ -9,7 +9,7 @@ from auto_post_classifier.models import TaskBase
 
 import asyncio
 import dotenv
-
+import sys
 import logging
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -19,7 +19,7 @@ import auto_post_classifier.api as api
 config = dotenv.dotenv_values()
 api_manager = api.ApiManager(config)
 
-
+logger.add(sys.stderr, format="{time} {level} {name}:{line} {message}")
 
 app = FastAPI(
     title="auto post classifier",

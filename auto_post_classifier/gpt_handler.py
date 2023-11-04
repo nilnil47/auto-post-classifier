@@ -61,7 +61,7 @@ class ResponseValidator:
                 if not validator(response_dict):
                     return (False, validator.__name__)
 
-                return True
+                return (True, "")
             
         except Exception as e:
             logger.exception("validation exception:", e)

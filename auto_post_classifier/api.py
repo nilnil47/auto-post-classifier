@@ -3,13 +3,15 @@ import json
 from pydantic import BaseModel
 from models import TaskBase
 
-
+import pathlib
 import utils
 import auto_post_classifier.gpt_handler as gpt_handler
 
 import asyncio
 
 from loguru import logger
+import auto_post_classifier.response_logger as response_logger
+import consts
 
 class Post(BaseModel):
     text: str
@@ -35,7 +37,11 @@ class ApiManager:
           self.pre_request_validator = PreRequestValidator()
           self.gpt_handler = gpt_handler.GptHandler(
                responses_path="responses.txt",
-               api_key=config['OPENAI_API_KEY']
+               api_key=config["OPENAI_API_KEY"]
+          )
+          self.response_logger = response_logger.ResponseLogger(
+               pathlib.Path(config["RESPONSES_DIR"]),
+               consts.RESPONSE_LOGGER_KEYS
           )
      
      def __str__(self) -> str:
@@ -48,4 +54,8 @@ class ApiManager:
                     self.gpt_handler.add_request(uuid, post.text, gpt_handler.GPT_MODEL.GPT_3_5_16k)
 
           await self.gpt_handler.send_requests()
-          return self.gpt_handler.read_responses()
+          response = self.gpt_handler.read_responses()
+          self.response_logger.log_response(response)
+          return response
+     
+          

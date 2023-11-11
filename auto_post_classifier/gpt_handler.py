@@ -4,7 +4,6 @@ from api_request_parallel_processor import process_api_requests
 from loguru import logger
 from pathlib import Path
 
-import auto_post_classifier.mock as mock
 import consts
 
 class GPT_MODEL:

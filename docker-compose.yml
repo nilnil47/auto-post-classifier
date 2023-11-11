@@ -9,7 +9,6 @@ services:
       - "80:80"
     volumes:
       - "./logs:/app/logs"
-      - "./output:/app/output"
-      - "./data:/app/data"
+      - "./responses:/app/responses"
       - ".env:/app/.env"
       - "./entrypoint.sh:/app/entrypoint.sh"

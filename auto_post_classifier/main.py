@@ -51,6 +51,7 @@ async def process_posts(json_posts: dict[str, api.Post]):
 def get_configuration():
      return api_manager.get_config()
 
+# FIXME: does not really update the api_manager
 @app.get('/reconfig')
 def reconfig():
       config = load_config()

@@ -5,8 +5,6 @@ from pydantic import BaseModel
 import pathlib
 import auto_post_classifier.gpt_handler as gpt_handler
 
-import asyncio
-
 from loguru import logger
 import auto_post_classifier.response_logger as response_logger
 import consts

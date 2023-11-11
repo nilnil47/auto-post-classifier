@@ -1,7 +1,7 @@
 import csv
 import pathlib
 import datetime
-import os
+
 from pathlib import Path
 
 class ResponseLogger:

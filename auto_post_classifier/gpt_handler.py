@@ -168,7 +168,6 @@ Provide an explanation for each ranking.
 
                 
                 validation, reasone, completion_response_dict = self.response_validator.validate(completion_response)
-                logger.info(completion_response_dict)
                 if validation:
                     response = self.handle_validate_response(
                         metadata,
@@ -189,3 +188,22 @@ Provide an explanation for each ranking.
     def handle_validate_response(self, metadata: dict, completion_response_dict: dict):
         completion_response_dict["text"] = metadata["text"]
         return {metadata["uuid"]: completion_response_dict}
+    
+    def calculate_score(self, completion_response_dict: dict):
+        weights = {
+            "antisemitism": 0.15,
+            "graphic_violence": 0.15,
+            "weapons": 0.10,
+            "endorsement_of_terrorism": 0.10,
+            "antiIsrael_extremist": 0.15,
+            "calls_for_violence": 0.20,
+            "misinformation": 0.20,
+        }
+        
+        rnk_mtpl_map = {-1.0: -0.2, 0.0: 0.2, 1.0: 1}
+        score = 0
+        
+        for dimension in weights:
+            score += rnk_mtpl_map[completion_response_dict[dimension + "_rnk"]] * weights[dimension]
+
+        return score

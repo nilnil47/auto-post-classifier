@@ -20,6 +20,10 @@ class Post(BaseModel):
 class JsonPosts(BaseModel):
     posts: dict[str, Post]
 
+# this calls is not really used right now
+# but it is here for show to consept of
+# the prerequest validator
+# now the validation is allways true
 class PreRequestValidator:
      def __init__(self) -> None:
           pass

@@ -9,12 +9,10 @@ class ResponseLogger:
     def __init__(self, dir: Path, fields : list) -> None:
         self.dir = dir
         self.fields = fields
-
-        self._create_response_dir()
     
     def _create_response_dir(self):
-        if not self.dir.exists:
-            os.mkdir(self.dir)
+        if not self.dir.exists():
+            self.dir.mkdir(parents=True)
 
     def set_path(self, path: pathlib.Path):
         self.path = path
@@ -35,6 +33,7 @@ class ResponseLogger:
         self.writer.writerow(response_entry)
 
     def log_response(self, response: dict):
+        self._create_response_dir()
         csv_file_path = self.dir / f"{datetime.datetime.now()}.csv"
         with open(csv_file_path, mode='w', newline='') as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=self.fields)

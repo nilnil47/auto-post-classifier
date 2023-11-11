@@ -13,8 +13,15 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import auto_post_classifier.api as api
+import consts
 
-config = dotenv.dotenv_values()
+def load_config():
+    config = consts.DEFULAT_ENV
+    config.update(dotenv.dotenv_values())
+    print(config)
+    return config
+
+config = load_config()
 api_manager = api.ApiManager(config)
 
 logger.add(sys.stderr, format="{time} {level} {name}:{line} {message}")
@@ -42,6 +49,13 @@ async def process_posts(json_posts: dict[str, api.Post]):
 
 @app.get('/config')
 def get_configuration():
-     return api_manager
+     return api_manager.get_config()
+
+@app.get('/reconfig')
+def reconfig():
+      config = load_config()
+      global api_manager
+      api_manager = api.ApiManager(config)
+      return config
 
 

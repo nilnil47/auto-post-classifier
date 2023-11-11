@@ -34,8 +34,11 @@ class PreRequestValidator:
      
 
 class ApiManager:
+     def get_config(self):
+          return self.config
+
      def __init__(self, config) -> None:
-          self.__dict__.update(config)
+          self.config = config
           self.pre_request_validator = PreRequestValidator()
           self.gpt_handler = gpt_handler.GptHandler(
                responses_path="responses.txt",

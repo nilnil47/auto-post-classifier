@@ -16,7 +16,8 @@ RESPONSE_LOGGER_KEYS : list = [
     'summary',
     'text',
     'uuid',
-    'score'
+    'score',
+    "error"
     ]
 
 WEIGHTS : dict = {
@@ -29,3 +30,7 @@ WEIGHTS : dict = {
     "misinformation": 0.20,
 }
 
+DEFULAT_ENV = {
+    "RESPONSES_DIR":"../responses",
+    "MOCK_FILE": None
+    }

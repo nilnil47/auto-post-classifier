@@ -4,8 +4,6 @@ from json import JSONDecodeError
 from fastapi import FastAPI
 from loguru import logger
 from pathlib import Path
-import auto_post_classifier.utils as utils
-from auto_post_classifier.models import TaskBase
 
 import asyncio
 import dotenv
@@ -41,15 +39,6 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.post("/rank")
 async def process_posts(json_posts: dict[str, api.Post]):
     return await api_manager.process_posts(json_posts)
-    # try:
-    #     res_list = await utils.multiple_posts_loop_asunc(       
-    #                 AutoPostCalassifierApi.openai_api_key,
-    #                 json_posts,
-    #                 AutoPostCalassifierApi.iter_num,
-    #                 AutoPostCalassifierApi.base_path)
-    # except Exception as e:
-    #     raise
-    # return res_list
 
 @app.get('/config')
 def get_configuration():

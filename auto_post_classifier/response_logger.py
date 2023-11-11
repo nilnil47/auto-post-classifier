@@ -1,6 +1,7 @@
 import csv
 import pathlib
 import datetime
+import os
 from pathlib import Path
 
 class ResponseLogger:
@@ -8,6 +9,12 @@ class ResponseLogger:
     def __init__(self, dir: Path, fields : list) -> None:
         self.dir = dir
         self.fields = fields
+
+        self._create_response_dir()
+    
+    def _create_response_dir(self):
+        if not self.dir.exists:
+            os.mkdir(self.dir)
 
     def set_path(self, path: pathlib.Path):
         self.path = path

@@ -161,6 +161,8 @@ cython_debug/
 
 .DS_Store/
 .DS_Store
+*.ipynb
 *.csv
+.vscode/
 
 auto_post_classifier/responses.json

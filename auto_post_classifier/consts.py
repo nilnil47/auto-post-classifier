@@ -1,4 +1,4 @@
-RESPONSE_LOGGER_KEYS : list = [
+RESPONSE_PERSISTER_KEYS : list = [
     'antisemitism_exp',
     'antisemitism_rnk',
     'antiIsrael_extremist_exp',

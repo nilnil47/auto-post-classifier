@@ -6,7 +6,7 @@ import pathlib
 import auto_post_classifier.gpt_handler as gpt_handler
 
 from loguru import logger
-import auto_post_classifier.response_logger as response_logger
+import auto_post_classifier.response_persister as response_persister
 import consts
 
 class Post(BaseModel):
@@ -43,9 +43,9 @@ class ApiManager:
                api_key=config["OPENAI_API_KEY"],
                mock_file=config["MOCK_FILE"]
           )
-          self.response_logger = response_logger.ResponseLogger(
+          self.response_persister = response_persister.ResponsePersister(
                pathlib.Path(config["RESPONSES_DIR"]),
-               consts.RESPONSE_LOGGER_KEYS
+               consts.RESPONSE_PERSISTER_KEYS
           )
      
      def __str__(self) -> str:
@@ -59,7 +59,7 @@ class ApiManager:
 
           await self.gpt_handler.send_requests()
           response = self.gpt_handler.read_responses()
-          self.response_logger.log_response(response)
+          self.response_persister.persist_response(response)
           return response
      
           

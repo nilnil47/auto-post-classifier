@@ -3,9 +3,7 @@ from json import JSONDecodeError
 
 from fastapi import FastAPI
 from loguru import logger
-from pathlib import Path
 
-import asyncio
 import dotenv
 import sys
 import logging

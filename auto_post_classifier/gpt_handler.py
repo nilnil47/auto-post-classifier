@@ -1,10 +1,10 @@
 import json
 import jsonschema
-from api_request_parallel_processor import process_api_requests
+from auto_post_classifier.api_request_parallel_processor import process_api_requests
 from loguru import logger
 from pathlib import Path
 
-import consts
+import auto_post_classifier.consts as consts
 
 class GPT_MODEL:
     GPT_3_5_16k = "gpt-3.5-turbo-16k"

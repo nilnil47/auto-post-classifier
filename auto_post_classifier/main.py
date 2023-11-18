@@ -1,4 +1,5 @@
 import json
+import os
 from json import JSONDecodeError
 
 from fastapi import FastAPI
@@ -11,7 +12,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import auto_post_classifier.api as api
-import consts
+import auto_post_classifier.consts as consts
 
 def load_config():
     config = consts.DEFULAT_ENV
@@ -22,7 +23,10 @@ def load_config():
 config = load_config()
 api_manager = api.ApiManager(config)
 
-logger.add(sys.stderr, format="{time} {level} {name}:{line} {message}")
+if not os.path.exists("logs"):
+     os.mkdir("logs")
+     
+logger.add(os.path.join("logs", "file_{time}.log"))
 
 app = FastAPI(
     title="auto post classifier",

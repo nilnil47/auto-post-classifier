@@ -7,7 +7,7 @@ import auto_post_classifier.gpt_handler as gpt_handler
 
 from loguru import logger
 import auto_post_classifier.response_persister as response_persister
-import consts
+import auto_post_classifier.consts as consts
 
 class Post(BaseModel):
     text: str

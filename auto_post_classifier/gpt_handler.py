@@ -185,6 +185,7 @@ Provide an explanation for each ranking.
 
     def handle_validate_response(self, metadata: dict, completion_response_dict: dict):
         completion_response_dict["text"] = metadata["text"]
+        completion_response_dict["error"] = ""
         completion_response_dict["score"] = self.calculate_score(completion_response_dict)
         return metadata["uuid"], completion_response_dict
     

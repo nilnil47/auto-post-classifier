@@ -23,8 +23,9 @@ def test_update_config():
 
 
 def _check_validation(response: dict):
+    assert len(response.items()) > 0 
     for uuid, post_response in response.items():
-        assert post_response["error"] is not None
+        assert post_response["error"] == ""
 
 
 def test_5_pots():
@@ -33,4 +34,5 @@ def test_5_pots():
     
     response = client.post("/rank", json=data)
     assert response.status_code == 200
-    assert response.json() == {}
+    assert type(response.json()) == dict
+    _check_validation(response.json())

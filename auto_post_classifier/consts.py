@@ -1,3 +1,5 @@
+from pathlib import Path
+
 RESPONSE_PERSISTER_KEYS : list = [
     'antisemitism_exp',
     'antisemitism_rnk',
@@ -34,3 +36,6 @@ DEFULAT_ENV = {
     "RESPONSES_DIR":"../responses",
     "MOCK_FILE": None
     }
+
+
+INVALID_JSON_RESPONSES_DIR = Path("invalid_json_reponses")

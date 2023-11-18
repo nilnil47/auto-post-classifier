@@ -26,7 +26,7 @@ class ResponseValidator:
             "properties": {"summary": {"type": "string"}},
             "patternProperties": {
                 ".*_exp$": {"type": "string"},
-                ".*_rnk$": {"type": "number"},
+                ".*_rnk$": {"enum": [0, 1, -1, "0", "1", "-1"]},
             },
             "additionalProperties": False,
             "required": ["summary"],
@@ -179,7 +179,9 @@ Provide an explanation for each ranking.
     def handle_bad_validation(self, reason: str, metadata: dict, completion_response_dict: dict):
         completion_response_dict["text"] = metadata["text"]
         completion_response_dict["error"] = reason
-        return metadata["uuid"], completion_response_dict
+        uuid = metadata["uuid"]
+        self._dump_invalid_json(uuid, completion_response_dict)
+        return uuid, completion_response_dict
 
     def handle_validate_response(self, metadata: dict, completion_response_dict: dict):
         completion_response_dict["text"] = metadata["text"]
@@ -188,12 +190,18 @@ Provide an explanation for each ranking.
     
     def calculate_score(self, completion_response_dict: dict):
         
-        rnk_mtpl_map = {-1.0: -0.2, 0.0: 0.2, 1.0: 1}
+        rnk_mtpl_map = {-1: -0.2, 0: 0.2, 1: 1}
         score = 0
 
         for dimension in consts.WEIGHTS:
-            score += rnk_mtpl_map[completion_response_dict[dimension + "_rnk"]] * consts.WEIGHTS[dimension]
+            score += rnk_mtpl_map[int(completion_response_dict[dimension + "_rnk"])] * consts.WEIGHTS[dimension]
         
         score = round(score, 3)
 
         return score
+    
+    def _dump_invalid_json(self, uuid: str, completion_response_dict: dict):
+        if not consts.INVALID_JSON_RESPONSES_DIR.exists():
+            consts.INVALID_JSON_RESPONSES_DIR.mkdir()
+        with open(consts.INVALID_JSON_RESPONSES_DIR / uuid, "w") as f:
+            json.dump(completion_response_dict, f)

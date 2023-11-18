@@ -25,7 +25,7 @@ api_manager = api.ApiManager(config)
 
 if not os.path.exists("logs"):
      os.mkdir("logs")
-     
+
 logger.add(os.path.join("logs", "file_{time}.log"))
 
 app = FastAPI(
@@ -54,11 +54,9 @@ def get_configuration():
      return api_manager.get_config()
 
 # FIXME: does not really update the api_manager
-@app.get('/reconfig')
-def reconfig():
-      config = load_config()
-      global api_manager
-      api_manager = api.ApiManager(config)
-      return config
-
+@app.post('/config')
+def update_config(edited_config: dict):
+    config.update(edited_config)
+    global api_manager
+    api_manager = api.ApiManager(config)
 

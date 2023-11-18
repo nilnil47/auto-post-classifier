@@ -59,6 +59,11 @@ class ApiManager:
 
           await self.gpt_handler.send_requests()
           response = self.gpt_handler.read_responses()
+          
+          if (len(json_posts)) != len(response):
+               logger.warning(f"the number of request and response posts are not equale"
+                              f"send {len(json_posts)} posts and got {len(response)} response")
+               
           self.response_persister.persist_response(response)
           return response
      

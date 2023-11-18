@@ -23,7 +23,7 @@ def test_update_config():
 
 
 def _check_validation(response: dict):
-    assert len(response.items()) > 0 
+    assert len(response.items()) == 5 
     for uuid, post_response in response.items():
         assert post_response["error"] == ""
 

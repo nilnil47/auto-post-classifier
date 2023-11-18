@@ -161,7 +161,6 @@ Provide an explanation for each ranking.
                 full_response : dict = json.loads(line)
                 completion_response : str = full_response[1]["choices"][0]["message"]["content"]
                 metadata = full_response[2]
-
                 
                 validation, reasone, completion_response_dict = self.response_validator.validate(completion_response)
                 if validation:
@@ -171,9 +170,9 @@ Provide an explanation for each ranking.
                     )
                 else:
                     uuid, response = self.handle_bad_validation(reasone, metadata, completion_response_dict)
-                
-            responses_dict[uuid] = response
-        
+
+                responses_dict[uuid] = response
+    
         return responses_dict
     
     def handle_bad_validation(self, reason: str, metadata: dict, completion_response_dict: dict):

@@ -1,10 +1,10 @@
 import json
 import jsonschema
-from api_request_parallel_processor import process_api_requests
+from auto_post_classifier.api_request_parallel_processor import process_api_requests
 from loguru import logger
 from pathlib import Path
 
-import consts
+import auto_post_classifier.consts as consts
 
 class GPT_MODEL:
     GPT_3_5_16k = "gpt-3.5-turbo-16k"
@@ -26,7 +26,7 @@ class ResponseValidator:
             "properties": {"summary": {"type": "string"}},
             "patternProperties": {
                 ".*_exp$": {"type": "string"},
-                ".*_rnk$": {"type": "number"},
+                ".*_rnk$": {"enum": [0, 1, -1, "0", "1", "-1"]},
             },
             "additionalProperties": False,
             "required": ["summary"],
@@ -161,7 +161,6 @@ Provide an explanation for each ranking.
                 full_response : dict = json.loads(line)
                 completion_response : str = full_response[1]["choices"][0]["message"]["content"]
                 metadata = full_response[2]
-
                 
                 validation, reasone, completion_response_dict = self.response_validator.validate(completion_response)
                 if validation:
@@ -171,29 +170,38 @@ Provide an explanation for each ranking.
                     )
                 else:
                     uuid, response = self.handle_bad_validation(reasone, metadata, completion_response_dict)
-                
-            responses_dict[uuid] = response
-        
+
+                responses_dict[uuid] = response
+    
         return responses_dict
     
     def handle_bad_validation(self, reason: str, metadata: dict, completion_response_dict: dict):
         completion_response_dict["text"] = metadata["text"]
         completion_response_dict["error"] = reason
-        return metadata["uuid"], completion_response_dict
+        uuid = metadata["uuid"]
+        self._dump_invalid_json(uuid, completion_response_dict)
+        return uuid, completion_response_dict
 
     def handle_validate_response(self, metadata: dict, completion_response_dict: dict):
         completion_response_dict["text"] = metadata["text"]
+        completion_response_dict["error"] = ""
         completion_response_dict["score"] = self.calculate_score(completion_response_dict)
         return metadata["uuid"], completion_response_dict
     
     def calculate_score(self, completion_response_dict: dict):
         
-        rnk_mtpl_map = {-1.0: -0.2, 0.0: 0.2, 1.0: 1}
+        rnk_mtpl_map = {-1: -0.2, 0: 0.2, 1: 1}
         score = 0
 
         for dimension in consts.WEIGHTS:
-            score += rnk_mtpl_map[completion_response_dict[dimension + "_rnk"]] * consts.WEIGHTS[dimension]
+            score += rnk_mtpl_map[int(completion_response_dict[dimension + "_rnk"])] * consts.WEIGHTS[dimension]
         
         score = round(score, 3)
 
         return score
+    
+    def _dump_invalid_json(self, uuid: str, completion_response_dict: dict):
+        if not consts.INVALID_JSON_RESPONSES_DIR.exists():
+            consts.INVALID_JSON_RESPONSES_DIR.mkdir()
+        with open(consts.INVALID_JSON_RESPONSES_DIR / uuid, "w") as f:
+            json.dump(completion_response_dict, f)

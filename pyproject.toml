@@ -30,6 +30,8 @@ ipykernel = "^6.25.2"
 flake8 = "^6.1.0"
 black = "^23.10.0"
 isort = "^5.12.0"
+httpx = "^0.25.1"
+pytest = "^7.4.3"
 
 [tool.poetry.scripts]
 auto-post-classifier = "auto_post_classifier.main:main"

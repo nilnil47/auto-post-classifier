@@ -62,9 +62,14 @@ class ResponseValidator:
 class GptHandler:
 
     def build_prompt(self, text):
-        user_prompt = self.jinja_environment.get_template("gpt3_5_user.prompt").render(text=text)
-        sys_prompt = self.jinja_environment.get_template("gpt3_5_system.prompt").render()
+        user_prompt = self.user_prompt_template.render(text=text)
+        sys_prompt = self.system_prompt_template.render()
         return (user_prompt, sys_prompt)
+    
+    def choose_prompt_template(self, user_template_path: str, system_template_path: str):
+        self.user_prompt_template = self.jinja_environment.get_template(user_template_path)
+        self.system_prompt_template = self.jinja_environment.get_template(system_template_path)
+
         
     def __init__(self, responses_path: Path, api_key: str, mock_file: str = None) -> None:
         self.requests = []
@@ -75,6 +80,10 @@ class GptHandler:
         self.jinja_environment = jinja2.Environment(
             loader=jinja2.FileSystemLoader("prompts"),
             autoescape=jinja2.select_autoescape()
+        )
+        self.choose_prompt_template(
+            "gpt3_5_user.prompt",
+            "gpt3_5_system.prompt"
         )
 
         self._handle_mock()

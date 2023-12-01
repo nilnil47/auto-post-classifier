@@ -7,7 +7,6 @@ text2 = "hamas will contrall all the world, you will see"
 
 # Define the data payload as a dictionary with the parameter name "text"
 # data = {"text": text, "content_url": "aaaa"}
-# data = {"a12": {"text": text, "content_url": "aaaa"}, 'b55': {"text": text2, "content_url": "aaaa"}}
 data = {"a12": {"text": text2, "content_url": "aaaa"}}
 
 # Send the POST request

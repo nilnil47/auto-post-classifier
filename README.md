@@ -32,3 +32,19 @@ First start the environment with `poetry shell` executed from the project's root
 ## install poetry
 
 https://python-poetry.org/docs/
+
+### debug with vscode
+
+configure a launch.json for attching python process and run the program using
+
+```
+ python -m debugpy --listen 5678 auto_post_classifier/main.py --api -d data/AntiIsraeli.csv
+```
+
+### pytest
+
+solve jupyter warining:
+
+```
+export JUPYTER_PLATFORM_DIRS=1
+```

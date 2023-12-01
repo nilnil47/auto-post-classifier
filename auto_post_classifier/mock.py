@@ -16,4 +16,3 @@ def mock_openai_request(mock_response_path: pathlib.Path):
         return wrapper
 
     return decorator
-    

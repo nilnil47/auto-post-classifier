@@ -11,7 +11,6 @@ from auto_post_classifier.api_request_parallel_processor import process_api_requ
 
 class GPT_MODEL:
     GPT_3_5_16k = "gpt-3.5-turbo-16k"
-    GPT_4 = ""
 
 
 class ResponseValidator:

@@ -1,4 +1,3 @@
-import logging
 import os
 
 import dotenv
@@ -34,17 +33,6 @@ app = FastAPI(
     openapi_url="/openapi.json",
     redoc_url="/redoc",
 )
-
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    exc_str = f"{exc}".replace("\n", " ").replace("   ", " ")
-    logging.error(f"{request}: {exc_str}")
-    content = {"status_code": 10422, "message": exc_str, "data": None}
-    return JSONResponse(
-        content=content, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
-    )
-
 
 @app.post("/rank")
 async def process_posts(json_posts: dict[str, api.Post]):

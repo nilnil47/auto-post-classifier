@@ -1,11 +1,15 @@
+"""
+This script is used to generate a sample request json file
+which is needed for the test_main.py testing script
+"""
 import json
 import uuid
 
 import pandas as pd
 
-output_path = "sample.json"
-csv_file = "data/AntiIsraeli.csv"
-n = 5
+output_path = "sample.json" # output json path
+csv_file = "data/AntiIsraeli.csv" # input csv file 
+n = 5 # number of posts to generate in sample.json
 
 df = pd.read_csv(csv_file)
 df = df.sample(n=n)

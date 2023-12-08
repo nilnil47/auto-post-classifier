@@ -12,10 +12,7 @@ packages = [{ include = "auto_post_classifier" }]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-pandas = "^2.1.1"
-typer = "^0.9.0"
 loguru = "^0.7.2"
-rich = "^13.6.0"
 pydantic = "^2.4.2"
 openai = "^0.28.1"
 pydantic-settings = "^2.0.3"
@@ -23,6 +20,7 @@ jsonschema = "^4.19.1"
 fastapi = "^0.103.2"
 uvicorn = "^0.23.2"
 tiktoken = "^0.5.1"
+Jinja2 = "^3.1.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -32,6 +30,7 @@ black = "^23.10.0"
 isort = "^5.12.0"
 httpx = "^0.25.1"
 pytest = "^7.4.3"
+pandas = "^2.1.1"
 
 [tool.poetry.scripts]
 auto-post-classifier = "auto_post_classifier.main:main"

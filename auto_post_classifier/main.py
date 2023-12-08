@@ -1,9 +1,7 @@
 import os
 
 import dotenv
-from fastapi import FastAPI, Request, status
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 from loguru import logger
 
 import auto_post_classifier.api as api
@@ -33,6 +31,7 @@ app = FastAPI(
     openapi_url="/openapi.json",
     redoc_url="/redoc",
 )
+
 
 @app.post("/rank")
 async def process_posts(json_posts: dict[str, api.Post]):

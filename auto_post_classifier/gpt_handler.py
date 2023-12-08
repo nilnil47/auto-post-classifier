@@ -67,18 +67,13 @@ class GptHandler:
         sys_prompt = self.system_prompt_template.render()
         return (user_prompt, sys_prompt)
 
-    def choose_prompt_template(
-        self, user_template_path: str, system_template_path: str
-    ):
-        self.user_prompt_template = self.jinja_environment.get_template(
-            user_template_path
-        )
-        self.system_prompt_template = self.jinja_environment.get_template(
-            system_template_path
-        )
-
     def __init__(
-        self, responses_path: Path, api_key: str, mock_file: str = None
+        self,
+        responses_path: Path,
+        api_key: str,
+        mock_file: str = None,
+        user_template: str = "gpt3_5_user.prompt",
+        system_template: str = "gpt3_5_system.prompt",
     ) -> None:
         self.requests = []
         self.responses_path: Path = responses_path
@@ -89,7 +84,10 @@ class GptHandler:
             loader=jinja2.FileSystemLoader("prompts"),
             autoescape=jinja2.select_autoescape(),
         )
-        self.choose_prompt_template("gpt3_5_user.prompt", "gpt3_5_system.prompt")
+        self.user_prompt_template = self.jinja_environment.get_template(user_template)
+        self.system_prompt_template = self.jinja_environment.get_template(
+            system_template
+        )
 
         self._handle_mock()
 

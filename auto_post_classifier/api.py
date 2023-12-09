@@ -1,5 +1,6 @@
 import json
 import pathlib
+import os
 
 from loguru import logger
 from pydantic import BaseModel
@@ -42,8 +43,8 @@ class ApiManager:
         self.pre_request_validator = PreRequestValidator()
         self.gpt_handler = gpt_handler.GptHandler(
             responses_path=pathlib.Path("responses.txt"),
-            api_key=config["OPENAI_API_KEY"],
-            mock_file=config["MOCK_FILE"],
+            api_key=os.environ["OPENAI_API_KEY"],
+            mock_file=os.environ["MOCK_FILE"],
         )
         self.response_persister = response_persister.ResponsePersister(
             pathlib.Path(config["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS

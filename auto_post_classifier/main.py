@@ -8,6 +8,7 @@ import auto_post_classifier.api as api
 import auto_post_classifier.consts as consts
 
 
+dotenv.load_dotenv()
 def load_config():
     config = consts.DEFULAT_ENV
     config.update(dotenv.dotenv_values())
@@ -16,6 +17,7 @@ def load_config():
 
 
 config = load_config()
+print(os.environ.get('MOCK_FILE', None))
 api_manager = api.ApiManager(config)
 
 if not os.path.exists("logs"):

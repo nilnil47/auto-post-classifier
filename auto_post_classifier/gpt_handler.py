@@ -4,9 +4,9 @@ from pathlib import Path
 import jinja2
 import jsonschema
 from loguru import logger
-
-import auto_post_classifier.consts as consts
-from auto_post_classifier.api_request_parallel_processor import process_api_requests
+import os
+from .consts import *
+from .api_request_parallel_processor import process_api_requests
 
 
 class GPT_MODEL:
@@ -39,7 +39,7 @@ class ResponseValidator:
             return False
 
     def validate_explenation(self, response_dict: dict):
-        for dimension in consts.WEIGHTS:
+        for dimension in WEIGHTS:
             if (
                 response_dict[f"{dimension}_exp"]
                 == f"-1, 0, or 1 ranking for {dimension}"
@@ -72,22 +72,36 @@ class GptHandler:
         responses_path: Path,
         api_key: str,
         mock_file: str = None,
+        invalid_json_responses_dir = None,
         user_template: str = "gpt3_5_user.prompt",
         system_template: str = "gpt3_5_system.prompt",
+        prompts_dir_path: str = None
     ) -> None:
         self.requests = []
         self.responses_path: Path = responses_path
         self.api_key: str = api_key
         self.response_validator: ResponseValidator = ResponseValidator()
         self.mock_file: str = mock_file
+
+        if prompts_dir_path is None:
+            prompts_dir_path = os.environ.get("PROMPTS_PATH", DEFAULT_PROMPTS_PATH)
+
         self.jinja_environment = jinja2.Environment(
-            loader=jinja2.FileSystemLoader("prompts"),
+            loader=jinja2.FileSystemLoader(prompts_dir_path),
             autoescape=jinja2.select_autoescape(),
         )
         self.user_prompt_template = self.jinja_environment.get_template(user_template)
         self.system_prompt_template = self.jinja_environment.get_template(
             system_template
         )
+
+        if invalid_json_responses_dir is None:
+            invalid_json_responses_dir = os.environ.get("INVALID_JSON_RESPONSES_DIR", DEFAULT_INVALID_JSON_RESPONSES)
+        
+        self.invalid_json_responses_dir : Path = Path(invalid_json_responses_dir)
+
+        logger.warning(f"api key: {self.api_key}")
+        logger.warning(f"mock file: {self.mock_file}")
 
         self._clean_response_path()
         self._handle_mock()
@@ -171,10 +185,10 @@ class GptHandler:
         rnk_mtpl_map = {-1: -0.2, 0: 0.2, 1: 1}
         score = 0
 
-        for dimension in consts.WEIGHTS:
+        for dimension in WEIGHTS:
             score += (
                 rnk_mtpl_map[int(completion_response_dict[dimension + "_rnk"])]
-                * consts.WEIGHTS[dimension]
+                * WEIGHTS[dimension]
             )
 
         score = round(score, 3)
@@ -182,7 +196,8 @@ class GptHandler:
         return score
 
     def _dump_invalid_json(self, uuid: str, completion_response_dict: dict):
-        if not consts.INVALID_JSON_RESPONSES_DIR.exists():
-            consts.INVALID_JSON_RESPONSES_DIR.mkdir()
-        with open(consts.INVALID_JSON_RESPONSES_DIR / uuid, "w") as f:
-            json.dump(completion_response_dict, f)
+        if not self.invalid_json_responses_dir.exists():
+            self.invalid_json_responses_dir.mkdir()
+
+        with open(self.invalid_json_responses_dir / uuid, "w") as f:
+            json.dump(self.invalid_json_responses_dir, f)

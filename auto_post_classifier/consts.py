@@ -35,4 +35,5 @@ WEIGHTS: dict = {
 DEFULAT_ENV = {"RESPONSES_DIR": "../responses", "MOCK_FILE": None}
 
 
-INVALID_JSON_RESPONSES_DIR = Path("invalid_json_reponses")
+DEFAULT_INVALID_JSON_RESPONSES = "invalid_json_reponses"
+DEFAULT_PROMPTS_PATH = "prompts"

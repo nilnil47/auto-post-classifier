@@ -8,6 +8,7 @@ from loguru import logger
 import os
 from .consts import *
 from .api_request_parallel_processor import process_api_requests
+from .utils import generate_uuid
 
 
 class GPT_MODEL:
@@ -50,15 +51,11 @@ class ResponseValidator:
                 logger.warning("validation error")
                 return False
         return True
-    
-    def validation_log_error(self, validator: str):
-        logger.error(f"validation error: {validator}")
 
     def validate(self, response: str) -> (bool, str, dict):
         response_dict = json.loads(response)
         for validator in self.validators:
             if not validator(response_dict):
-                self.validation_log_error(validator.__name__)
                 return (False, validator.__name__, response_dict)
 
             return (True, "", response_dict)
@@ -137,18 +134,24 @@ class GptHandler:
             await process_api_requests(self.requests, self.responses_path, self.api_key)
     
     def _read_single_response(self, line : str):
+
         full_response: list = json.loads(line)
+
+        # the metada is the last entry
+        try:
+            metadata = full_response[-1]
+            uuid = metadata["uuid"]
+        except TabError:
+            uuid = generate_uuid()
 
         try:
             completion_response: str = full_response[1]["choices"][0]["message"][
                 "content"
             ]
         except TypeError:
-            self._handle_parsing_error(full_response, reason="tokens")     
+            self._handle_parsing_error(full_response, reason="tokens", uuid=uuid)     
             return
         
-        metadata = full_response[2]
-
         try:
             (
                 validation,
@@ -161,11 +164,11 @@ class GptHandler:
             return
         
         if validation:
-            uuid, response = self.handle_validate_response(
+            response = self.handle_validate_response(
                 metadata, completion_response_dict
             )
         else:
-            uuid, response = self.handle_bad_validation(
+            response = self.handle_bad_validation(
                 reasone, metadata, completion_response_dict
             )
 
@@ -189,25 +192,25 @@ class GptHandler:
     
     def _handle_parsing_error(self, response: dict | list | str, uuid=None, reason="unknow"):
 
+        if uuid is None:
+            uuid = generate_uuid()
+
+        logger.error(f"bad parsing for {uuid}: {reason}")
         inner_dir : Path = self.invalid_json_responses_dir / reason
         
         if not inner_dir.exists():
             inner_dir.mkdir(parents=True)
+        
+        file_name = f"{uuid}.json"
 
-        if isinstance(response, dict) or isinstance(response, list):
-            if uuid is not None:
-                file_name = f"{uuid}.json"
-            else:
-                file_name = f"{GPT_NO_UUID_ERROR_FILE}_{datetime.datetime.now()}.json"
-            
-            with open(inner_dir / file_name, "w") as f:
-                    json.dump(response, f)
-
-        elif isinstance(response, str):
-
-            file_name = f"{GPT_PARSING_ERROR_FILE}_{datetime.datetime.now()}.json"
-            with open(inner_dir / file_name, "w") as f:
+        with open(inner_dir / file_name, "w") as f:
+            if isinstance(response, dict) or isinstance(response, list):
+                json.dump(response, f)
+            elif isinstance(response, str):
                 f.write(response)
+            else:
+                logger.error(f"unkwon response type for {uuid}. type is: {type(response)}")
+
 
     def handle_bad_validation(
         self, reason: str, metadata: dict, completion_response_dict: dict
@@ -216,7 +219,7 @@ class GptHandler:
         completion_response_dict["error"] = reason
         uuid = metadata["uuid"]
         self._handle_parsing_error(completion_response_dict, uuid=uuid, reason=reason)
-        return uuid, completion_response_dict
+        return completion_response_dict
 
     def handle_validate_response(self, metadata: dict, completion_response_dict: dict):
         completion_response_dict["text"] = metadata["text"]
@@ -224,7 +227,7 @@ class GptHandler:
         completion_response_dict["score"] = self.calculate_score(
             completion_response_dict
         )
-        return metadata["uuid"], completion_response_dict
+        return completion_response_dict
 
     def calculate_score(self, completion_response_dict: dict):
         rnk_mtpl_map = {-1: -0.2, 0: 0.2, 1: 1}

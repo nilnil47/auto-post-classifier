@@ -11,6 +11,7 @@ from .consts import DEFAULT_INVALID_JSON_RESPONSES, DEFAULT_PROMPTS_PATH, WEIGHT
 from .utils import generate_uuid
 
 
+# todo: from python 3.11 its is possible to use string enums
 class GPT_MODEL:
     GPT_3_5_16k = "gpt-3.5-turbo-16k"
 
@@ -117,7 +118,7 @@ class GptHandler:
             logger.warning(f"using mock response file: {self.mock_file}")
             self.responses_path = Path(self.mock_file)
 
-    def add_request(self, uuid: str, text: str, model: GPT_MODEL) -> None:
+    def add_request(self, uuid: str, text: str, model: str) -> None:
         user_prompt, sys_prompt = self.build_prompt(text)
         self.requests.append(
             {

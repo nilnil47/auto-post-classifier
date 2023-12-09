@@ -15,9 +15,9 @@ class GPT_MODEL:
 
 class ResponseValidator:
     def __init__(self) -> None:
-        self.validators = [self.validate_json, self.validate_explenation]
+        self.validators = [self.validate_json_schema, self.validate_explenation]
 
-    def validate_json(self, response_dict: dict):
+    def validate_json_schema(self, response_dict: dict):
         # Define the JSON schema
         schema = {
             "type": "object",
@@ -59,6 +59,7 @@ class ResponseValidator:
 
         except Exception as e:
             logger.exception("validation exception:", e)
+            return (False, "validate_json", {"json_error": response})
 
 
 class GptHandler:
@@ -140,7 +141,7 @@ class GptHandler:
         responses_dict = {}
         with open(self.responses_path, "r") as file:
             for line in file:
-                full_response: dict = json.loads(line)
+                full_response: list = json.loads(line)
                 completion_response: str = full_response[1]["choices"][0]["message"][
                     "content"
                 ]
@@ -195,9 +196,9 @@ class GptHandler:
 
         return score
 
-    def _dump_invalid_json(self, uuid: str, completion_response_dict: dict):
+    def _dump_invalid_json(self, uuid: str, completion_response_dict: dict | str):
         if not self.invalid_json_responses_dir.exists():
             self.invalid_json_responses_dir.mkdir()
 
         with open(self.invalid_json_responses_dir / uuid, "w") as f:
-            json.dump(self.invalid_json_responses_dir, f)
+            json.dump(completion_response_dict, f)

@@ -15,6 +15,8 @@ class GPT_MODEL:
 
 
 class ResponseValidator:
+    main_validator = "validate_json"
+
     def __init__(self) -> None:
         self.validators = [self.validate_json_schema, self.validate_explenation]
 
@@ -48,19 +50,18 @@ class ResponseValidator:
                 logger.warning("validation error")
                 return False
         return True
+    
+    def validation_log_error(self, validator: str):
+        logger.error(f"validation error: {validator}")
 
     def validate(self, response: str) -> (bool, str, dict):
-        try:
-            response_dict = json.loads(response)
-            for validator in self.validators:
-                if not validator(response_dict):
-                    return (False, validator.__name__, response_dict)
+        response_dict = json.loads(response)
+        for validator in self.validators:
+            if not validator(response_dict):
+                self.validation_log_error(validator.__name__)
+                return (False, validator.__name__, response_dict)
 
-                return (True, "", response_dict)
-
-        except json.decoder.JSONDecodeError as e:
-            logger.error("validation exception")
-            return (False, "validate_json", {"json_error": response})
+            return (True, "", response_dict)
 
 
 class GptHandler:
@@ -137,16 +138,28 @@ class GptHandler:
     
     def _read_single_response(self, line : str):
         full_response: list = json.loads(line)
-        completion_response: str = full_response[1]["choices"][0]["message"][
-            "content"
-        ]
+
+        try:
+            completion_response: str = full_response[1]["choices"][0]["message"][
+                "content"
+            ]
+        except TypeError:
+            self._handle_parsing_error(full_response, reason="tokens")     
+            return
+        
         metadata = full_response[2]
 
-        (
-            validation,
-            reasone,
-            completion_response_dict,
-        ) = self.response_validator.validate(completion_response)
+        try:
+            (
+                validation,
+                reasone,
+                completion_response_dict,
+            ) = self.response_validator.validate(completion_response)
+
+        except json.decoder.JSONDecodeError as e:
+            self._handle_parsing_error(completion_response, reason=ResponseValidator.main_validator)
+            return
+        
         if validation:
             uuid, response = self.handle_validate_response(
                 metadata, completion_response_dict
@@ -166,10 +179,7 @@ class GptHandler:
         self.responses_dict = {}
         with open(self.responses_path, "r") as file:
             for line in file:
-                try:
-                    self._read_single_response(line)
-                except TypeError:
-                    self._handle_parsing_error(line)
+                self._read_single_response(line)
                     
         return self.responses_dict
     
@@ -177,23 +187,26 @@ class GptHandler:
     #     with open(self.invalid_json_responses_dir / f"{GPT_PARSING_ERROR_FILE}_{datetime.datetime.now()}.json", "w") as f:
     #         f.write(line)
     
-    def _handle_parsing_error(self, response: dict | list | str):
+    def _handle_parsing_error(self, response: dict | list | str, uuid=None, reason="unknow"):
 
-        if not self.invalid_json_responses_dir.exists():
-            self.invalid_json_responses_dir.mkdir()
+        inner_dir : Path = self.invalid_json_responses_dir / reason
+        
+        if not inner_dir.exists():
+            inner_dir.mkdir(parents=True)
 
-        if isinstance(response, dict):
-            try:
-                file_name = f"{response['uuid']}.json"
-            except KeyError:
+        if isinstance(response, dict) or isinstance(response, list):
+            if uuid is not None:
+                file_name = f"{uuid}.json"
+            else:
                 file_name = f"{GPT_NO_UUID_ERROR_FILE}_{datetime.datetime.now()}.json"
             
-            with open(self.invalid_json_responses_dir / file_name, "w") as f:
+            with open(inner_dir / file_name, "w") as f:
                     json.dump(response, f)
 
         elif isinstance(response, str):
+
             file_name = f"{GPT_PARSING_ERROR_FILE}_{datetime.datetime.now()}.json"
-            with open(self.invalid_json_responses_dir / file_name, "w") as f:
+            with open(inner_dir / file_name, "w") as f:
                 f.write(response)
 
     def handle_bad_validation(
@@ -202,7 +215,7 @@ class GptHandler:
         completion_response_dict["text"] = metadata["text"]
         completion_response_dict["error"] = reason
         uuid = metadata["uuid"]
-        self._handle_parsing_error(completion_response_dict)
+        self._handle_parsing_error(completion_response_dict, uuid=uuid, reason=reason)
         return uuid, completion_response_dict
 
     def handle_validate_response(self, metadata: dict, completion_response_dict: dict):

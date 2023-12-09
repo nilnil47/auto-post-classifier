@@ -11,6 +11,7 @@ csv_file = "../data/data_classified.csv"  # input csv file
 n = 100  # number of posts to generate in sample.json
 
 df = pd.read_csv(csv_file)
+df = df.fillna("")
 
 # n = len(df)
 print(n)
@@ -37,4 +38,4 @@ sample_json = {
 }
 
 with open(output_path, "w") as f:
-    json.dump(sample_json, f, indent=2)
+    json.dump(sample_json, f, indent=2, allow_nan=False)

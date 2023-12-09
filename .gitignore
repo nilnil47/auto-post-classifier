@@ -168,6 +168,8 @@ scripts/
 data/
 responses/
 *.json
+t.py
+sample.json
 
 auto_post_classifier/responses.json
 auto_post_classifier/responses.txt

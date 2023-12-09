@@ -1,5 +1,3 @@
-from pathlib import Path
-
 RESPONSE_PERSISTER_KEYS: list = [
     "antisemitism_exp",
     "antisemitism_rnk",

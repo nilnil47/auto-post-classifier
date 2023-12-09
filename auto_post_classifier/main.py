@@ -5,8 +5,6 @@ from fastapi import FastAPI
 from loguru import logger
 
 import auto_post_classifier.api as api
-import auto_post_classifier.consts as consts
-
 
 dotenv.load_dotenv()
 api_manager = api.ApiManager()

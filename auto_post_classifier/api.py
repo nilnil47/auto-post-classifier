@@ -1,12 +1,13 @@
 import json
-import pathlib
 import os
+import pathlib
 
 from loguru import logger
 
 import auto_post_classifier.consts as consts
 import auto_post_classifier.gpt_handler as gpt_handler
 import auto_post_classifier.response_persister as response_persister
+
 from .models import Post
 
 
@@ -27,10 +28,7 @@ class PreRequestValidator:
 
 class ApiManager:
     def get_config(self):
-        return {
-            "gpt": self.gpt_handler,
-            "response_persister": self.response_persister
-        }
+        return {"gpt": self.gpt_handler, "response_persister": self.response_persister}
 
     def __init__(self) -> None:
         self.pre_request_validator = PreRequestValidator()

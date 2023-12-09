@@ -1,11 +1,10 @@
 import json
 import os
 
+import pandas as pd
 from fastapi.testclient import TestClient
 
 import auto_post_classifier.main as main
-import auto_post_classifier.consts as consts
-import pandas as pd
 
 client = TestClient(main.app)
 # sample_path = "../tests/samples/sample_100.json"
@@ -15,7 +14,6 @@ os.environ["MOCK_FILE"] = f"../mock/{sample_name}"
 
 
 def set_up_tests():
-
     with open(sample_path) as f:
         data = json.load(f)
 
@@ -25,22 +23,22 @@ def set_up_tests():
     response = client.post("/rank", json=request)
     assert response.status_code == 200
     response_data = response.json()
-    assert type(response_data) == dict
+    assert isinstance(response_data, dict)
 
     for uuid, response_entry in response_data.items():
         response_entry["volunteers"] = volunteers_validation[uuid]
-        
-    df = pd.DataFrame.from_dict(response_data, orient='index')
+
+    df = pd.DataFrame.from_dict(response_data, orient="index")
 
     # fixme: fix this
     df.to_csv("test.csv")
-    df = pd.read_csv('test.csv')
-    
+    df = pd.read_csv("test.csv")
+
     return df
 
 
-df : pd.DataFrame = set_up_tests()
+df: pd.DataFrame = set_up_tests()
+
 
 def test_validation():
-    assert df.loc[:, "error"].isnull().all() == True
-    
+    assert df.loc[:, "error"].isnull().all() is True

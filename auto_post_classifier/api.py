@@ -41,7 +41,7 @@ class ApiManager:
         self.config = config
         self.pre_request_validator = PreRequestValidator()
         self.gpt_handler = gpt_handler.GptHandler(
-            responses_path="responses.txt",
+            responses_path=pathlib.Path("responses.txt"),
             api_key=config["OPENAI_API_KEY"],
             mock_file=config["MOCK_FILE"],
         )

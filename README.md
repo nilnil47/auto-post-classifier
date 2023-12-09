@@ -48,3 +48,9 @@ solve jupyter warining:
 ```
 export JUPYTER_PLATFORM_DIRS=1
 ```
+
+run only my-py test:
+
+```
+pytest --mypy -m mypy
+```

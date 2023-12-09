@@ -89,7 +89,12 @@ class GptHandler:
             system_template
         )
 
+        self._clean_response_path()
         self._handle_mock()
+    
+    def _clean_response_path(self):
+        if self.responses_path.exists():
+            self.responses_path.unlink()
 
     def _handle_mock(self):
         if self.mock_file is not None:

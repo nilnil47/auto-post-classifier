@@ -141,7 +141,7 @@ class GptHandler:
         try:
             metadata = full_response[-1]
             uuid = metadata["uuid"]
-        except TabError:
+        except TypeError:
             uuid = generate_uuid()
 
         try:

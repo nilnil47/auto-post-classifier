@@ -167,6 +167,7 @@ cython_debug/
 scripts/
 data/
 responses/
+*.json
 
 auto_post_classifier/responses.json
 auto_post_classifier/responses.txt

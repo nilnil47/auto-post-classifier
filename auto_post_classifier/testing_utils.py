@@ -8,13 +8,17 @@ import pandas as pd
 
 output_path = "sample.json"  # output json path
 csv_file = "../data/data_classified.csv"  # input csv file
-n = 1  # number of posts to generate in sample.json
+n = 100  # number of posts to generate in sample.json
 
 df = pd.read_csv(csv_file)
+
+# n = len(df)
+print(n)
 df = df.sample(n=n)
 
 request = {}
 wanted_responses = {}
+platforms = {}
 
 for i in range(n):
     id = df.iloc[i]["Id"]
@@ -24,10 +28,12 @@ for i in range(n):
     }
     request[id] = post
     wanted_responses[id] = df.iloc[i]["Category"]
+    platforms[id] = df.iloc[i]["Platform"]
 
 sample_json = {
     "request": request,
     "wanted_responses": wanted_responses,
+    "platforms": platforms,
 }
 
 with open(output_path, "w") as f:

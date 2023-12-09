@@ -37,3 +37,6 @@ DEFULAT_ENV = {"RESPONSES_DIR": "../responses", "MOCK_FILE": None}
 
 DEFAULT_INVALID_JSON_RESPONSES = "invalid_json_reponses"
 DEFAULT_PROMPTS_PATH = "prompts"
+
+GPT_PARSING_ERROR_FILE = "gpt_prasing_error"
+GPT_NO_UUID_ERROR_FILE = "gpt_no_uuid_error"

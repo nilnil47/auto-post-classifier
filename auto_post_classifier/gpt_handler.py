@@ -58,8 +58,8 @@ class ResponseValidator:
 
                 return (True, "", response_dict)
 
-        except Exception as e:
-            logger.exception("validation exception:", e)
+        except json.decoder.JSONDecodeError as e:
+            logger.error("validation exception")
             return (False, "validate_json", {"json_error": response})
 
 
@@ -169,15 +169,16 @@ class GptHandler:
                 try:
                     self._read_single_response(line)
                 except TypeError:
-                    self._handle_open_ai_parsing_error(line)
+                    self._handle_parsing_error(line)
                     
         return self.responses_dict
     
-    def _handle_open_ai_parsing_error(self, line):
-        with open(self.invalid_json_responses_dir / f"{GPT_PARSING_ERROR_FILE}_{datetime.datetime.now()}.json", "w") as f:
-            f.write(line)
+    # def _handle_open_ai_parsing_error(self, line):
+    #     with open(self.invalid_json_responses_dir / f"{GPT_PARSING_ERROR_FILE}_{datetime.datetime.now()}.json", "w") as f:
+    #         f.write(line)
     
     def _handle_parsing_error(self, response: dict | list | str):
+
         if not self.invalid_json_responses_dir.exists():
             self.invalid_json_responses_dir.mkdir()
 
@@ -185,13 +186,14 @@ class GptHandler:
             try:
                 file_name = f"{response['uuid']}.json"
             except KeyError:
-                file_name = f"parsing_error_{datetime.datetime.now()}"
+                file_name = f"{GPT_NO_UUID_ERROR_FILE}_{datetime.datetime.now()}.json"
             
             with open(self.invalid_json_responses_dir / file_name, "w") as f:
                     json.dump(response, f)
 
         elif isinstance(response, str):
-            with open(self.invalid_json_responses_dir / f"{GPT_PARSING_ERROR_FILE}_{datetime.datetime.now()}.json", "w") as f:
+            file_name = f"{GPT_PARSING_ERROR_FILE}_{datetime.datetime.now()}.json"
+            with open(self.invalid_json_responses_dir / file_name, "w") as f:
                 f.write(response)
 
     def handle_bad_validation(

@@ -3,20 +3,11 @@ import pathlib
 import os
 
 from loguru import logger
-from pydantic import BaseModel
 
 import auto_post_classifier.consts as consts
 import auto_post_classifier.gpt_handler as gpt_handler
 import auto_post_classifier.response_persister as response_persister
-
-
-class Post(BaseModel):
-    text: str
-    content_url: str
-
-
-class JsonPosts(BaseModel):
-    posts: dict[str, Post]
+from .models import Post
 
 
 # this calls is not really used right now

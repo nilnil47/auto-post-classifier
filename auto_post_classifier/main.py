@@ -9,16 +9,7 @@ import auto_post_classifier.consts as consts
 
 
 dotenv.load_dotenv()
-def load_config():
-    config = consts.DEFULAT_ENV
-    config.update(dotenv.dotenv_values())
-    print(config)
-    return config
-
-
-config = load_config()
-print(os.environ.get('MOCK_FILE', None))
-api_manager = api.ApiManager(config)
+api_manager = api.ApiManager()
 
 if not os.path.exists("logs"):
     os.mkdir("logs")
@@ -43,11 +34,3 @@ async def process_posts(json_posts: dict[str, api.Post]):
 @app.get("/config")
 def get_configuration():
     return api_manager.get_config()
-
-
-# FIXME: does not really update the api_manager
-@app.post("/config")
-def update_config(edited_config: dict):
-    config.update(edited_config)
-    global api_manager
-    api_manager = api.ApiManager(config)

@@ -36,10 +36,12 @@ class PreRequestValidator:
 
 class ApiManager:
     def get_config(self):
-        return self.config
+        return {
+            "gpt": self.gpt_handler,
+            "response_persister": self.response_persister
+        }
 
-    def __init__(self, config) -> None:
-        self.config = config
+    def __init__(self) -> None:
         self.pre_request_validator = PreRequestValidator()
         self.gpt_handler = gpt_handler.GptHandler(
             responses_path=pathlib.Path("responses.txt"),
@@ -47,7 +49,7 @@ class ApiManager:
             mock_file=os.environ["MOCK_FILE"],
         )
         self.response_persister = response_persister.ResponsePersister(
-            pathlib.Path(config["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
+            pathlib.Path(os.environ["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
         )
 
     def __str__(self) -> str:

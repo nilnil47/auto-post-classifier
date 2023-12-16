@@ -52,8 +52,8 @@ def test_response_have_all_keys():
 
 
 def test_many_requests_error():
-    assert not GPT_ERROR_REASONS.TO_MANY_REQUESTS in df["error"].unique()
+    assert GPT_ERROR_REASONS.TO_MANY_REQUESTS not in df["error"].unique()
 
 
 def test_json_validation_error():
-    assert not GPT_ERROR_REASONS.JSON_VALIDARTION in df["error"].unique()
+    assert GPT_ERROR_REASONS.JSON_VALIDARTION not in df["error"].unique()

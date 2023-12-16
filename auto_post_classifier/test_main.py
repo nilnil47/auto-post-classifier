@@ -46,11 +46,14 @@ df: pd.DataFrame = set_up_tests()
 def test_validation():
     assert df.loc[:, "error"].isnull().all()
 
+
 def test_response_have_all_keys():
     assert len(df) == number_of_lines_in_sample
 
+
 def test_many_requests_error():
     assert not GPT_ERROR_REASONS.TO_MANY_REQUESTS in df["error"].unique()
+
 
 def test_json_validation_error():
     assert not GPT_ERROR_REASONS.JSON_VALIDARTION in df["error"].unique()

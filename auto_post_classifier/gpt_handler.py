@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+from typing import Optional
 
 import jinja2
 import jsonschema
@@ -56,13 +57,13 @@ class ResponseValidator:
                 return False
         return True
 
-    def validate(self, response: str) -> (bool, str, dict):
+    def validate(self, response: str) -> tuple[bool, str, dict]:
         response_dict = json.loads(response)
         for validator in self.validators:
             if not validator(response_dict):
                 return (False, validator.__name__, response_dict)
 
-            return (True, "", response_dict)
+        return (True, "", response_dict)
 
 
 class GptHandler:
@@ -75,17 +76,17 @@ class GptHandler:
         self,
         responses_path: Path,
         api_key: str,
-        mock_file: str = None,
+        mock_file: Optional[str] = None,
         invalid_json_responses_dir=None,
         user_template: str = "gpt3_5_user.prompt",
         system_template: str = "gpt3_5_system.prompt",
-        prompts_dir_path: str = None,
+        prompts_dir_path: str = None,  # type: ignore
     ) -> None:
-        self.requests = []
+        self.requests : list[dict] = []
         self.responses_path: Path = responses_path
         self.api_key: str = api_key
         self.response_validator: ResponseValidator = ResponseValidator()
-        self.mock_file: str = mock_file
+        self.mock_file: Optional[str] = mock_file
 
         if prompts_dir_path is None:
             prompts_dir_path = os.environ.get("PROMPTS_PATH", DEFAULT_PROMPTS_PATH)

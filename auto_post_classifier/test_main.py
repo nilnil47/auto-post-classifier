@@ -10,6 +10,7 @@ client = TestClient(main.app)
 # sample_path = "../tests/samples/sample_100.json"
 sample_name = "sample_100.json"
 sample_path = f"../tests/samples/{sample_name}"
+number_of_lines_in_sample = 100
 os.environ["MOCK_FILE"] = f"../mock/{sample_name}"
 
 
@@ -41,4 +42,7 @@ df: pd.DataFrame = set_up_tests()
 
 
 def test_validation():
-    assert df.loc[:, "error"].isnull().all() is True
+    assert df.loc[:, "error"].isnull().all()
+
+def test_response_have_all_keys():
+    assert len(df) == number_of_lines_in_sample

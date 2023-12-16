@@ -15,7 +15,8 @@ from .utils import generate_uuid
 class GPT_MODEL:
     GPT_3_5_16k = "gpt-3.5-turbo-16k"
 
-
+class GPT_ERROR_REASONS:
+    TO_MANY_REQUESTS = "many_requests"
 class ResponseValidator:
     main_validator = "validate_json"
 
@@ -150,9 +151,15 @@ class GptHandler:
             completion_response: str = full_response[1]["choices"][0]["message"][
                 "content"
             ]
-        except TypeError:
-            self._handle_parsing_error(full_response, reason="tokens", uuid=uuid)
+
+        except TypeError: # happens when getting to the tokens max capacity
+            response = self.handle_bad_validation(
+                GPT_ERROR_REASONS.TO_MANY_REQUESTS, metadata, {}
+            )
+            self.responses_dict[uuid] = response
             return
+
+
 
         try:
             (
@@ -162,9 +169,10 @@ class GptHandler:
             ) = self.response_validator.validate(completion_response)
 
         except json.decoder.JSONDecodeError:
-            self._handle_parsing_error(
-                completion_response, reason=ResponseValidator.main_validator
+            response = self.handle_bad_validation(
+                ResponseValidator.main_validator, metadata, {}
             )
+            self.responses_dict[uuid] = response
             return
 
         if validation:

@@ -17,9 +17,8 @@ class GPT_MODEL:
 
 class GPT_ERROR_REASONS:
     TO_MANY_REQUESTS = "many_requests"
+    JSON_VALIDARTION = "validate_json"
 class ResponseValidator:
-    main_validator = "validate_json"
-
     def __init__(self) -> None:
         self.validators = [self.validate_json_schema, self.validate_explenation]
 
@@ -170,7 +169,7 @@ class GptHandler:
 
         except json.decoder.JSONDecodeError:
             response = self.handle_bad_validation(
-                ResponseValidator.main_validator, metadata, {}
+                GPT_ERROR_REASONS.JSON_VALIDARTION, metadata, {}
             )
             self.responses_dict[uuid] = response
             return

@@ -6,6 +6,8 @@ from fastapi.testclient import TestClient
 
 import auto_post_classifier.main as main
 
+from .gpt_handler import GPT_ERROR_REASONS
+
 client = TestClient(main.app)
 # sample_path = "../tests/samples/sample_100.json"
 sample_name = "sample_100.json"
@@ -46,3 +48,9 @@ def test_validation():
 
 def test_response_have_all_keys():
     assert len(df) == number_of_lines_in_sample
+
+def test_many_requests_error():
+    assert not GPT_ERROR_REASONS.TO_MANY_REQUESTS in df["error"].unique()
+
+def test_json_validation_error():
+    assert not GPT_ERROR_REASONS.JSON_VALIDARTION in df["error"].unique()

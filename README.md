@@ -12,22 +12,15 @@ This should get you all you need.
 
 Code that doesn't pass the tests in [`code_style_validation`] target of the `Makefile` won't be accepted.
 
-## Run the script
+## Run the app
 
-The script should be installed as an executable in the environment created by `poetry` (see above).
-It is possible to run the script in one of two ways:
+To run the app, enter the into auto_post_classifier directory and run
 
-### Directly
-
+```bash
+cd auto_post_classifier
+poetry shell
+uvicorn main:app --host 0.0.0.0 --port 80 --reload
 ```
-poetry run python auto_post_classifier/main.py
-```
-
-Use this method during dev.
-
-### Indirectly
-
-First start the environment with `poetry shell` executed from the project's root directory and then simply execute `auto-post-classifier`
 
 ## install poetry
 

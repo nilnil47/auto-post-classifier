@@ -20,6 +20,7 @@ class GPT_MODEL:
 class GPT_ERROR_REASONS:
     TO_MANY_REQUESTS = "many_requests"
     JSON_VALIDARTION = "validate_json"
+    CANT_OPEN_RESPONSE_JSON = "cant_open_response_json"
 
 
 class ResponseValidator:
@@ -67,6 +68,12 @@ class ResponseValidator:
 
 
 class GptHandler:
+    def __str__(self) -> str:
+        return json.dumps({
+            "api_key": self.api_key,
+            "mock_file": self.mock_file,
+        })
+    
     def build_prompt(self, text):
         user_prompt = self.user_prompt_template.render(text=text)
         sys_prompt = self.system_prompt_template.render()
@@ -141,7 +148,13 @@ class GptHandler:
             await process_api_requests(self.requests, self.responses_path, self.api_key)
 
     def _read_single_response(self, line: str):
-        full_response: list = json.loads(line)
+        try: # when getting wrong json from open ai, probably mocking problem
+            full_response: list = json.loads(line)
+        except json.decoder.JSONDecodeError:
+            uuid = generate_uuid()
+            response = self._handle_parsing_error(line, uuid, GPT_ERROR_REASONS.CANT_OPEN_RESPONSE_JSON)
+            self.responses_dict[uuid] = response
+            return
 
         # the metada is the last entry
         try:
@@ -170,6 +183,7 @@ class GptHandler:
             ) = self.response_validator.validate(completion_response)
 
         except json.decoder.JSONDecodeError:
+            metadata
             response = self.handle_bad_validation(
                 GPT_ERROR_REASONS.JSON_VALIDARTION, metadata, {}
             )
@@ -219,6 +233,11 @@ class GptHandler:
                 logger.error(
                     f"unkwon response type for {uuid}. type is: {type(response)}"
                 )
+                
+        return {
+            "error": reason,
+            "uuid":  uuid
+        }
 
     def handle_bad_validation(
         self, reason: str, metadata: dict, completion_response_dict: dict

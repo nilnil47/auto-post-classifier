@@ -7,6 +7,7 @@ from loguru import logger
 import auto_post_classifier.consts as consts
 import auto_post_classifier.gpt_handler as gpt_handler
 import auto_post_classifier.response_persister as response_persister
+from .utils import get_var_from_env
 
 from .models import Post
 
@@ -28,14 +29,14 @@ class PreRequestValidator:
 
 class ApiManager:
     def get_config(self):
-        return {"gpt": self.gpt_handler, "response_persister": self.response_persister}
+        return {"gpt": str(self.gpt_handler), "response_persister": self.response_persister}
 
     def __init__(self) -> None:
         self.pre_request_validator = PreRequestValidator()
         self.gpt_handler = gpt_handler.GptHandler(
             responses_path=pathlib.Path("responses.txt"),
             api_key=os.environ["OPENAI_API_KEY"],
-            mock_file=os.environ["MOCK_FILE"],
+            mock_file=get_var_from_env("MOCK_FILE"),
         )
         self.response_persister = response_persister.ResponsePersister(
             pathlib.Path(os.environ["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS

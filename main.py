@@ -13,6 +13,7 @@ if not os.path.exists("logs"):
     os.mkdir("logs")
 
 logger.add(os.path.join("logs", "file_{time}.log"))
+logger.info(api_manager.get_config())
 
 app = FastAPI(
     title="auto post classifier",

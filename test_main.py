@@ -4,23 +4,21 @@ import os
 import pandas as pd
 from fastapi.testclient import TestClient
 
-import auto_post_classifier.main as main
+import main
 
-from .gpt_handler import GPT_ERROR_REASONS
+from auto_post_classifier.gpt_handler import GPT_ERROR_REASONS
 
 client = TestClient(main.app)
-# sample_path = "../tests/samples/sample_100.json"
-sample_name = "sample_100.json"
-sample_path = f"../tests/samples/{sample_name}"
-number_of_lines_in_sample = 100
-os.environ["MOCK_FILE"] = f"../mock/{sample_name}"
-
+sample_name = "sample_1.json"
+sample_path = f"tests/samples/{sample_name}"
+os.environ["MOCK_FILE"] = f"mock/{sample_name}"
 
 def set_up_tests():
     with open(sample_path) as f:
         data = json.load(f)
 
     request = data["request"]
+    number_of_lines_in_sample = len(request)
     volunteers_validation = data["wanted_responses"]
 
     response = client.post("/rank", json=request)
@@ -29,6 +27,7 @@ def set_up_tests():
     assert isinstance(response_data, dict)
 
     for uuid, response_entry in response_data.items():
+        assert uuid in volunteers_validation, "wrong mock file for the test"
         response_entry["volunteers"] = volunteers_validation[uuid]
 
     df = pd.DataFrame.from_dict(response_data, orient="index")
@@ -37,10 +36,10 @@ def set_up_tests():
     df.to_csv("test.csv")
     df = pd.read_csv("test.csv")
 
-    return df
+    return df, number_of_lines_in_sample
 
 
-df: pd.DataFrame = set_up_tests()
+df, number_of_lines_in_sample = set_up_tests()
 
 
 def test_validation():

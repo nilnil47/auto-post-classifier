@@ -69,11 +69,13 @@ class ResponseValidator:
 
 class GptHandler:
     def __str__(self) -> str:
-        return json.dumps({
-            "api_key": self.api_key,
-            "mock_file": self.mock_file,
-        })
-    
+        return json.dumps(
+            {
+                "api_key": self.api_key,
+                "mock_file": self.mock_file,
+            }
+        )
+
     def build_prompt(self, text):
         user_prompt = self.user_prompt_template.render(text=text)
         sys_prompt = self.system_prompt_template.render()
@@ -89,7 +91,7 @@ class GptHandler:
         system_template: str = "gpt3_5_system.prompt",
         prompts_dir_path: str = None,  # type: ignore
     ) -> None:
-        self.requests : list[dict] = []
+        self.requests: list[dict] = []
         self.responses_path: Path = responses_path
         self.api_key: str = api_key
         self.response_validator: ResponseValidator = ResponseValidator()
@@ -148,11 +150,13 @@ class GptHandler:
             await process_api_requests(self.requests, self.responses_path, self.api_key)
 
     def _read_single_response(self, line: str):
-        try: # when getting wrong json from open ai, probably mocking problem
+        try:  # when getting wrong json from open ai, probably mocking problem
             full_response: list = json.loads(line)
         except json.decoder.JSONDecodeError:
             uuid = generate_uuid()
-            response = self._handle_parsing_error(line, uuid, GPT_ERROR_REASONS.CANT_OPEN_RESPONSE_JSON)
+            response = self._handle_parsing_error(
+                line, uuid, GPT_ERROR_REASONS.CANT_OPEN_RESPONSE_JSON
+            )
             self.responses_dict[uuid] = response
             return
 
@@ -233,11 +237,8 @@ class GptHandler:
                 logger.error(
                     f"unkwon response type for {uuid}. type is: {type(response)}"
                 )
-                
-        return {
-            "error": reason,
-            "uuid":  uuid
-        }
+
+        return {"error": reason, "uuid": uuid}
 
     def handle_bad_validation(
         self, reason: str, metadata: dict, completion_response_dict: dict

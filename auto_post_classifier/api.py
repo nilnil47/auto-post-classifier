@@ -7,9 +7,9 @@ from loguru import logger
 import auto_post_classifier.consts as consts
 import auto_post_classifier.gpt_handler as gpt_handler
 import auto_post_classifier.response_persister as response_persister
-from .utils import get_var_from_env
 
 from .models import Post
+from .utils import get_var_from_env
 
 
 # this calls is not really used right now
@@ -29,7 +29,10 @@ class PreRequestValidator:
 
 class ApiManager:
     def get_config(self):
-        return {"gpt": str(self.gpt_handler), "response_persister": self.response_persister}
+        return {
+            "gpt": str(self.gpt_handler),
+            "response_persister": self.response_persister,
+        }
 
     def __init__(self) -> None:
         self.pre_request_validator = PreRequestValidator()

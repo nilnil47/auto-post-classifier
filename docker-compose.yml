@@ -12,4 +12,4 @@ services:
       - "./responses:/app/responses"
       - "./mock:/app/mock"
       - ".env:/app/.env"
-      - "./entrypoint.sh:/app/entrypoint.sh"
+      # - "./entrypoint.sh:/app/entrypoint.sh"

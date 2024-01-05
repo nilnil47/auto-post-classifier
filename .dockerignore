@@ -1,0 +1,7 @@
+*
+!main.py
+!auto_post_classifier
+!poetry.lock
+!pyproject.toml
+!prompts
+!entrypoint.sh

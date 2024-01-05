@@ -1,21 +1,15 @@
 import json
+import os
 import pathlib
 
 from loguru import logger
-from pydantic import BaseModel
 
 import auto_post_classifier.consts as consts
 import auto_post_classifier.gpt_handler as gpt_handler
 import auto_post_classifier.response_persister as response_persister
 
-
-class Post(BaseModel):
-    text: str
-    content_url: str
-
-
-class JsonPosts(BaseModel):
-    posts: dict[str, Post]
+from .models import Post
+from .utils import get_var_from_env
 
 
 # this calls is not really used right now
@@ -35,18 +29,20 @@ class PreRequestValidator:
 
 class ApiManager:
     def get_config(self):
-        return self.config
+        return {
+            "gpt": str(self.gpt_handler),
+            "response_persister": self.response_persister,
+        }
 
-    def __init__(self, config) -> None:
-        self.config = config
+    def __init__(self) -> None:
         self.pre_request_validator = PreRequestValidator()
         self.gpt_handler = gpt_handler.GptHandler(
-            responses_path="responses.txt",
-            api_key=config["OPENAI_API_KEY"],
-            mock_file=config["MOCK_FILE"],
+            responses_path=pathlib.Path("responses.txt"),
+            api_key=os.environ["OPENAI_API_KEY"],
+            mock_file=get_var_from_env("MOCK_FILE"),
         )
         self.response_persister = response_persister.ResponsePersister(
-            pathlib.Path(config["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
+            pathlib.Path(os.environ["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
         )
 
     def __str__(self) -> str:

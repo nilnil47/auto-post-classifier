@@ -164,6 +164,13 @@ cython_debug/
 *.ipynb
 *.csv
 .vscode/
+scripts/
+data/
+responses/
+*.json
+t.py
+sample.json
+test.csv
 
 auto_post_classifier/responses.json
 auto_post_classifier/responses.txt

@@ -1,5 +1,3 @@
-from pathlib import Path
-
 RESPONSE_PERSISTER_KEYS: list = [
     "antisemitism_exp",
     "antisemitism_rnk",
@@ -35,4 +33,8 @@ WEIGHTS: dict = {
 DEFULAT_ENV = {"RESPONSES_DIR": "../responses", "MOCK_FILE": None}
 
 
-INVALID_JSON_RESPONSES_DIR = Path("invalid_json_reponses")
+DEFAULT_INVALID_JSON_RESPONSES = "invalid_json_reponses"
+DEFAULT_PROMPTS_PATH = "prompts"
+
+GPT_PARSING_ERROR_FILE = "gpt_prasing_error"
+GPT_NO_UUID_ERROR_FILE = "gpt_no_uuid_error"

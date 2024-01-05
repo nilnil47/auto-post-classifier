@@ -1,9 +1,0 @@
-typer
-rich
-loguru
-requests
-pydantic
-pandas
-openai
-uvicorn
-jsonschema

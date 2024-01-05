@@ -12,22 +12,23 @@ This should get you all you need.
 
 Code that doesn't pass the tests in [`code_style_validation`] target of the `Makefile` won't be accepted.
 
-## Run the script
+## Run the app
 
-The script should be installed as an executable in the environment created by `poetry` (see above).
-It is possible to run the script in one of two ways:
+first install the dependencies using poetry
 
-### Directly
-
-```
-poetry run python auto_post_classifier/main.py
+```bash
+# inside the root direcroy
+poetry install
 ```
 
-Use this method during dev.
+It is needed to create a `.env` file contains the necessary information for the app
+to run. The field that needed to be defined can be found in the file: `example.env`
 
-### Indirectly
+After that, run the app using
 
-First start the environment with `poetry shell` executed from the project's root directory and then simply execute `auto-post-classifier`
+```bash
+poetry run uvicorn main:app --host 0.0.0.0 --port 80 --reload
+```
 
 ## install poetry
 
@@ -47,4 +48,10 @@ solve jupyter warining:
 
 ```
 export JUPYTER_PLATFORM_DIRS=1
+```
+
+run only my-py test:
+
+```
+pytest --mypy -m mypy
 ```

@@ -14,12 +14,20 @@ Code that doesn't pass the tests in [`code_style_validation`] target of the `Mak
 
 ## Run the app
 
-To run the app, enter the into auto_post_classifier directory and run
+first install the dependencies using poetry
 
 ```bash
-cd auto_post_classifier
-poetry shell
-uvicorn main:app --host 0.0.0.0 --port 80 --reload
+# inside the root direcroy
+poetry install
+```
+
+It is needed to create a `.env` file contains the necessary information for the app
+to run. The field that needed to be defined can be found in the file: `example.env`
+
+After that, run the app using
+
+```bash
+poetry run uvicorn main:app --host 0.0.0.0 --port 80 --reload
 ```
 
 ## install poetry

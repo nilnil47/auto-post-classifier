@@ -42,7 +42,7 @@ class ApiManager:
             mock_file=get_var_from_env("MOCK_FILE"),
         )
         self.response_persister = response_persister.ResponsePersister(
-            pathlib.Path(os.environ["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
+             pathlib.Path(os.environ["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
         )
 
     def __str__(self) -> str:
@@ -65,5 +65,5 @@ class ApiManager:
                 f"send {len(json_posts)} posts and got {len(response)} response"
             )
 
-        self.response_persister.persist_response(response)
+        # self.response_persister.persist_response(response)
         return response

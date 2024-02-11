@@ -55,3 +55,9 @@ run only my-py test:
 ```
 pytest --mypy -m mypy
 ```
+
+### generate testing data set
+1. get a `data-classified.csv` file
+2. use `auto_post_classifier/testing_utils.py` to generate a sample.json file.
+3. run the test using `pytest` from the root directory
+

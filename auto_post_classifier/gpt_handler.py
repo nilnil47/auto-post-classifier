@@ -258,7 +258,7 @@ class GptHandler:
         return completion_response_dict
 
     def calculate_score(self, completion_response_dict: dict):
-        rnk_mtpl_map = {-1: -0.2, 0: 0.2, 1: 1}
+        rnk_mtpl_map = {-1: 0, 0: 0.5, 1: 1}
         score = 0
 
         for dimension in WEIGHTS:

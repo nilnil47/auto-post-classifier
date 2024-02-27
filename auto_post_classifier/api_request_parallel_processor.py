@@ -266,6 +266,7 @@ async def process_api_requests(
 
     # after finishing, log final status
     logging.info(f"""Parallel processing complete. Results saved to {save_filepath}""")
+    request_list.clear()
     if status_tracker.num_tasks_failed > 0:
         logging.warning(
             f"{status_tracker.num_tasks_failed} /"

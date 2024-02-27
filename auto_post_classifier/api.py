@@ -66,4 +66,6 @@ class ApiManager:
             )
 
         # self.response_persister.persist_response(response)
+        self.gpt_handler._clean_response_path()
+        json_posts.clear()
         return response

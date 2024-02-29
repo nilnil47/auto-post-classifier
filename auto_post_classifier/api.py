@@ -42,7 +42,7 @@ class ApiManager:
             mock_file=get_var_from_env("MOCK_FILE"),
         )
         self.response_persister = response_persister.ResponsePersister(
-             pathlib.Path(os.environ["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
+            pathlib.Path(os.environ["RESPONSES_DIR"]), consts.RESPONSE_PERSISTER_KEYS
         )
 
     def __str__(self) -> str:
@@ -67,5 +67,4 @@ class ApiManager:
 
         # self.response_persister.persist_response(response)
         self.gpt_handler._clean_response_path()
-        json_posts.clear()
         return response

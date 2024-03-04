@@ -14,7 +14,7 @@ class ResponsePersister:
 
     def persist_response(self, response: dict):
         self._create_response_dir()
-        csv_file_path = self.dir / f"{datetime.datetime.now()}.csv"
+        csv_file_path = self.dir / f"{datetime.datetime.now().strftime('%d-%m-%Y')}.csv"
         with open(csv_file_path, mode="w", newline="") as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=self.fields)
             writer.writeheader()

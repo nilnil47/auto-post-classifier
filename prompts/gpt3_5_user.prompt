@@ -9,26 +9,29 @@ humanity under international humanitarian law.@@
 The result should be provided as a JSON with the following format:
 
 {
-    "antisemitism_exp": "Explanation regarding the presence of antisemitic content",
+    "antisemitism_exp": "Explanation regarding the presence of antisemitic content, including classic antisemitism or antisemitic conspiracy theory",
     "antisemitism_rnk": "-1, 0, or 1 ranking for antisemitism",
 
     "antiIsrael_extremist_exp": "Explanation regarding the presence of anti-Israel extremist content",
     "antiIsrael_extremist_rnk": "-1, 0, or 1 ranking for anti-Israel extremism",
 
-    "graphic_violence_exp": "Explanation regarding the presence of graphic violence content",
+    "antiZionism_extremist_exp": "Explanation regarding the presence of anti-Zionism extremist content",
+    "antiZionism_extremist_rnk": "-1, 0, or 1 ranking for anti-Zionism extremism",
+
+    "graphic_violence_exp": "Explanation regarding the presence of graphic violence content or incitement/glorification of violence",
     "graphic_violence_rnk": "-1, 0, or 1 ranking for graphic violence",
 
-    "weapons_exp": "Explanation regarding the presence of content related to weapons",
-    "weapons_rnk": "-1, 0, or 1 ranking for weapons content",
+    "pro_palestine_exp": "Explanation regarding the presence of content related to supporting Palestine instead of the existence of Israel",
+    "pro_palestine_rnk": "-1, 0, or 1 ranking for pro palestine content",
 
-    "calls_for_violence_exp": "Explanation regarding the presence of content related to a call for violence operation",
-    "calls_for_violence_rnk": "-1, 0, or 1 ranking for a call for violence operation",
+    "holocaust_exp": "Explanation regarding the presence of Holocaust denial, Holocaust supporters, Holocaust justification, supporters of Nazi Germany or supporting Hitler",
+    "holocaust_rnk": "-1, 0, or 1 ranking for support or denial of the holocaust",
 
-    "endorsement_of_terrorism_exp": "Explanation regarding the presence of content supporting terrorism",
+    "endorsement_of_terrorism_exp": "Explanation regarding the presence of content supporting terrorism, specially if support HAMAS",
     "endorsement_of_terrorism_rnk": "-1, 0, or 1 ranking for support of terrorism",
 
-    "misinformation_exp": "Explanation regarding the presence of misinformation",
-    "misinformation_rnk": "-1, 0, or 1 ranking for misinformation",
+    "misinformation_exp": "Explanation regarding the presence of misinformation or fake news or conspiracy related to Israel or about Jews",
+    "misinformation_rnk": "-1, 0, or 1 ranking for misinformation or fake news",
 
     "summary": "Summary of the post in a maximum of 3 lines"
 }

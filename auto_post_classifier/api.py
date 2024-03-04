@@ -65,5 +65,6 @@ class ApiManager:
                 f"send {len(json_posts)} posts and got {len(response)} response"
             )
 
-        self.response_persister.persist_response(response)
+        # self.response_persister.persist_response(response)
+        self.gpt_handler._clean_response_path()
         return response

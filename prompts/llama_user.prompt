@@ -35,7 +35,7 @@ The result should be provided as a JSON with the following format:
 
     "summary": "Summary of the post in a maximum of 3 lines"
 }
-
+without any other text or comments signs in the beginning or in the end.
 ```
 {{ text }}
 ``` 

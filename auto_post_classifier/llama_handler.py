@@ -119,6 +119,7 @@ class LlamaHandler:
         self._handle_mock()
 
     def _clean_response_path(self):
+        return
         if self.responses_path.exists():
             self.responses_path.unlink()
 
@@ -157,6 +158,8 @@ class LlamaHandler:
                 responses.append([request["metadata"], response["message"]["content"]])
             
             with open(self.responses_path, "w") as f:
+                print("--------------------------------")
+                print(self.responses_path)
                 for response in responses:
                     json.dump(response, f)
                     f.write("\n")
@@ -241,3 +244,9 @@ class LlamaHandler:
         with open(self.invalid_json_responses_dir / uuid, "w") as f:
             json.dump(completion_response_dict, f)
 
+    def _read_single_response(self, line: str):
+            full_response: list = json.loads(line)
+            metadata = full_response[-1]
+            uuid = metadata["uuid"]
+            response = metadata["text"]
+            self.responses_dict[uuid] = response

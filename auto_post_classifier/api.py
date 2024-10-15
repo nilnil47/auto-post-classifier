@@ -50,6 +50,7 @@ class ApiManager:
 
     @logger.catch
     async def process_posts(self, json_posts: dict[str, Post]):
+        self.gpt_handler.reset_requests()
         for uuid, post in json_posts.items():
             if self.pre_request_validator.validate(post):
                 self.gpt_handler.add_request(

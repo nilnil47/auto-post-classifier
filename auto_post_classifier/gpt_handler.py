@@ -144,6 +144,9 @@ class GptHandler:
             }
         )
 
+    def reset_requests(self):
+        self.requests = []
+
     async def send_requests(self):
         logger.info(f"process {len(self.requests)} requests")
         if self.mock_file is None:

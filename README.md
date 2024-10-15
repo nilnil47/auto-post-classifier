@@ -61,3 +61,19 @@ pytest --mypy -m mypy
 2. use `auto_post_classifier/testing_utils.py` to generate a sample.json file.
 3. run the test using `pytest` from the root directory
 
+## building the docker
+
+```bash
+docker build -t auto-post-classifier .
+```
+
+## running the docker
+
+running the docker using the docker compose file:
+
+```bash
+docker compose up
+
+```
+you need to add the .env file to your main working directory.
+```

@@ -3,16 +3,16 @@
 ### Production
 
 1. Deploy current code (GPT-based classification) to production and integrate with existing systems.
+   - Time estimation: Already fully implemented and waiting for integration with Gil and Emanuel
+
 2. Create a new grading system algorithm. It will be based on the following aspects:
    - Has relevant category
    - How new the post is
    - How much traffic the post has
-3. Use LLAMA as the LLM instead of GPT. The reason is mentioned in the reasons section
+   - Time estimation: Need to decide where in the system it will be implemented (probably the webapp) and implementation shouldn't be long (probably a week)
 
-#### Time Estimation
-1. Already fully implemented and waiting for integration with Gil and Emanuel
-2. Need to decide where in the system it will be implemented (probably the webapp) and implementation shouldn't be long (probably a week)
-3. POC exists, but needs another 4 weeks to fully implement, mainly because of response prompt syntax issues (Neil)
+3. Use LLAMA as the LLM instead of GPT. The reason is mentioned in the reasons section
+   - Time estimation: POC exists, but needs another 4 weeks to fully implement, mainly because of response prompt syntax issues (Neil)
 
 ### Research
 1. Performance Measurement
@@ -40,3 +40,20 @@
    - Assess feasibility and potential benefits
    - Develop regression or classification model for embeddings
    - Time estimation: Variable, based on complexity and developer expertise
+
+### Total Time Estimation Summary
+
+Based on the individual time estimates provided, here's a summary of the total time it may take to complete all tasks:
+
+1. Production tasks: 
+   - Task 1 (GPT-based classification): Already implemented (waiting for integration)
+   - Task 2 (new grading system): 1 week
+   - Task 3 (LLAMA): 4 weeks
+
+2. Research tasks:
+   - Task 1 (Performance Measurement): 2 weeks
+   - Task 2 (Multi-model Support): 2 weeks
+   - Task 3 (Multilingual Support, Optional): 2 weeks for POC
+   - Task 4 (Embedding-based Classification, Optional): Variable
+
+Total estimated time: Approximately 9-11 weeks, not including integration time for the first production task and the variable time for the last research task. This estimate assumes sequential execution of tasks and does not account for potential parallel work or delays. The actual timeline may vary based on team capacity, priorities, and the decision to implement optional features.

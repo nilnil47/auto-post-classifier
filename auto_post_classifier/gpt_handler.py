@@ -68,6 +68,7 @@ class ResponseValidator:
 
 
 class GptHandler:
+    MODEL = GPT_MODEL.GPT_3_5_16k
     def __str__(self) -> str:
         return json.dumps(
             {
@@ -131,11 +132,11 @@ class GptHandler:
             logger.warning(f"using mock response file: {self.mock_file}")
             self.responses_path = Path(self.mock_file)
 
-    def add_request(self, uuid: str, text: str, model: str) -> None:
+    def add_request(self, uuid: str, text: str) -> None:
         user_prompt, sys_prompt = self.build_prompt(text)
         self.requests.append(
             {
-                "model": model,
+                "model": self.MODEL,
                 "messages": [
                     {"role": "system", "content": sys_prompt},
                     {"role": "user", "content": user_prompt},
